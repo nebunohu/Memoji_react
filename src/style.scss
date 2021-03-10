@@ -1,0 +1,116 @@
+@import "./components/modalWindow/modalWindow.scss"; 
+@import "./components/menuBlock/menuBlock.scss/";
+@import "./components/playground/playground.scss";
+@import "./components/button/button.scss";
+@import "./components/card/card.scss";
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html  {
+    width: 100%;
+    height: 100%;
+    background-color: #cfd0cf;
+}
+
+header {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    margin: 40px 0 40px 0;
+    text-align: center;
+    font: bold 42px Arial, Helvetica, sans-serif;
+    line-height: 47px;
+}
+
+main {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    align-items: flex-start;
+    font: bold 48px Arial, Helvetica, sans-serif;
+    color:#434344;
+}
+
+/*ul {
+    padding: 0;
+    margin: 0;
+}*/
+
+li {
+    list-style-type: none;
+}
+
+
+
+
+
+.visible {
+    display: flex;
+}
+
+.popupText{
+    display: flex;
+    margin: 30px 0 0 0;
+}
+
+.popupText .letter1,
+.popupText .letter2,
+.popupText .letter3,
+.popupText .letter4 {
+    animation-name: jump;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+}
+
+.popupText .letter2 {
+    animation-delay: 0.125s;
+}
+
+.popupText .letter3 {
+    animation-delay: 0.25s;
+}
+
+.popupText .letter4 {
+    animation-delay: 0.375s;
+}
+
+@keyframes jump {
+    0%, 2%, 98%, 100% {
+        transform: translateY(0);
+    }
+    48%, 52% {
+        transform: translateY(-10px) scaleY(1.2);
+    }
+}
+
+
+/*.card:hover .flipper,*/ .card.hover .flipper, .card .rotate {
+    transform: rotateY(180deg);
+}     
+
+
+
+.correct {
+    background-color: #5ad66f;
+    cursor: default;
+}
+
+.incorrect{
+    background-color: #f44336;
+    cursor: default;
+}
+
+.image_wrapper {
+    margin: auto;
+    font-size: 75px;
+    line-height: 75px;
+    height: max-content;
+}
+
+
+
+
+
