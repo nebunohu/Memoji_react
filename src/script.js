@@ -1,6 +1,6 @@
 "use strict"
 import './style.scss';
-import React, { Component } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
 import MemojiReactApp from './components/MemojiReactApp/MemojiReactApp';
 
@@ -75,49 +75,6 @@ MEMOJIAPP.putCardsOnTable = function () {
     }
 
 }
-
-MEMOJIAPP.rotate = function(event) {
-    let currentCard = null,
-        cardsContainer = MEMOJIAPP.cardsContainer,
-        firstClick = MEMOJIAPP.flags.firstClick,
-        cards = MEMOJIAPP.cards,
-        openedCards = MEMOJIAPP.openedCards,
-        currentFlipper = null,
-        timerId = MEMOJIAPP.timer.id,
-        i;
-    if(event.target.closest('.card__flipper'))
-    {
-        currentFlipper = event.target.closest('.card__flipper');
-        if(MEMOJIAPP.flags.firstClick)
-        {
-            MEMOJIAPP.flags.firstClick = 0;
-            MEMOJIAPP.timer.id = window.setInterval(() => MEMOJIAPP.decrTimer(),1000);
-        }
-    
-        // сохранение индекса текущего элемента
-        for(i = 0; i < cards.length;  i++)
-        {
-            if(cards[i].flipper === currentFlipper)
-            {
-                currentCard = cards[i];
-            }
-        }
-        // переворот карточки
-        if(!(currentCard.back.classList.contains('correct') || currentCard.back.classList.contains('incorrect')) && !currentCard.flipper.classList.contains('rotate'))
-        {
-            openedCards.push(currentCard);
-            currentCard.flipper.classList.add('rotate');
-        }
-        else if(!(currentCard.back.classList.contains('correct') || currentCard.back.classList.contains('incorrect')))
-        {
-            currentCard.flipper.classList.remove('rotate');
-            openedCards.splice(0,1);
-        }
-    }
-    if(openedCards.length > 1) MEMOJIAPP.compareCards();
-
-}
-
 
 MEMOJIAPP.putNewCards = function() {
     let emojis,
@@ -245,70 +202,7 @@ MEMOJIAPP.lose = function() {
     MEMOJIAPP.endGame();
 }
 
-MEMOJIAPP.decrTimer = function() {
-    let timerWrapper = document.querySelector('.playground__timerWrapper'),
-        minutes, seconds,
-        minutesStr, secondsStr,     // Значения минут и секунд записанные строкой 
-        timer = MEMOJIAPP.timer.counter,
-        timerId = MEMOJIAPP.timer.id;
-    MEMOJIAPP.timer.counter--;
-    minutes = Math.floor(MEMOJIAPP.timer.counter / 60);
-    minutesStr = minutes.toString();
-    if(minutes < 10) minutesStr = '0'+ minutesStr;
-    seconds = MEMOJIAPP.timer.counter % 60;
-    secondsStr =seconds.toString();
-    if(seconds < 10) secondsStr = '0'+ secondsStr;
-    timerWrapper.textContent = minutesStr+':'+secondsStr;
 
-   if(!MEMOJIAPP.timer.counter)
-   {
-       clearInterval(MEMOJIAPP.timer.id);
-       MEMOJIAPP.lose();
-   }
-}
-
- MEMOJIAPP.compareCards = function() {
-    let correct = 1,
-        openedCards = MEMOJIAPP.openedCards,
-        cards = MEMOJIAPP.cards,
-        i;
-    switch(openedCards.length)
-    {
-        case 2:
-            if(openedCards[0].image === openedCards[1].image)
-            {
-                openedCards[0].back.classList.add('correct');
-                openedCards[1].back.classList.add('correct');
-            }
-            else
-            {
-                openedCards[0].back.classList.add('incorrect');
-                openedCards[1].back.classList.add('incorrect');
-            }
-        break;
-        case 3:
-            //перевернуть карточки и сбросить цвет задника, если они угаданы неверно
-            if(!(openedCards[0].back.classList.contains('correct') && openedCards[1].back.classList.contains('correct')))
-            {
-                openedCards[0].flipper.classList.remove('rotate');
-                openedCards[1].flipper.classList.remove('rotate'); 
-                openedCards[0].back.classList.remove('incorrect');
-                openedCards[1].back.classList.remove('incorrect'); 
-            }
-
-            openedCards.splice(0, 2);
-        break;
-        default:
-        break;
-    }
-
-    for(i = 0; i < cards.length; i++)
-    {
-        if(!cards[i].back.classList.contains('correct')) correct = 0;
-    }
-    if(correct) MEMOJIAPP.win();
-        
-}
 
  MEMOJIAPP.clickControl = function() {
     let menuList = document.querySelector(".menuBlock__list"),
@@ -380,6 +274,8 @@ MEMOJIAPP.decrTimer = function() {
 }
 
 MEMOJIAPP.startgame = (function (){
+    ReactDOM.render(<MemojiReactApp />, document.querySelector('#root'));
+
     MEMOJIAPP.namespace('cards'); // Массив всех карточек на игровом поле
     MEMOJIAPP.cards = [];
     MEMOJIAPP.namespace('backs'); // Массив всех задников на игровом поле
@@ -414,11 +310,13 @@ MEMOJIAPP.startgame = (function (){
     MEMOJIAPP.namespace('resultTable.score');
 
     MEMOJIAPP.putCardsOnTable();
-    MEMOJIAPP.clickControl();
+    //MEMOJIAPP.clickControl();
     MEMOJIAPP.clickPopupButton();
 
-    ReactDOM.render(<MemojiReactApp />, document.querySelector('#root'));
+    
 }());
+
+export default MEMOJIAPP;
 
 
 

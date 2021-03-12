@@ -2,10 +2,10 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./src/components/playground/__timerWrapper/__timerWrapper.js":
-/*!********************************************************************!*\
-  !*** ./src/components/playground/__timerWrapper/__timerWrapper.js ***!
-  \********************************************************************/
+/***/ "./src/components/MemojiReactApp/MemojiReactApp.js":
+/*!*********************************************************!*\
+  !*** ./src/components/MemojiReactApp/MemojiReactApp.js ***!
+  \*********************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -13,6 +13,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var _playground_playground_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../playground/playground.js */ "./src/components/playground/playground.js");
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -37,30 +38,116 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 
 
 
-var timerWrapper = /*#__PURE__*/function (_Component) {
-  _inherits(timerWrapper, _Component);
 
-  var _super = _createSuper(timerWrapper);
+var MemojiReactApp = /*#__PURE__*/function (_Component) {
+  _inherits(MemojiReactApp, _Component);
 
-  function timerWrapper() {
-    _classCallCheck(this, timerWrapper);
+  var _super = _createSuper(MemojiReactApp);
+
+  function MemojiReactApp(props) {
+    var _this;
+
+    _classCallCheck(this, MemojiReactApp);
+
+    _this = _super.call(this, props);
+    _this.state = {};
+    return _this;
+  }
+
+  _createClass(MemojiReactApp, [{
+    key: "render",
+    value: function render() {
+      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_playground_playground_js__WEBPACK_IMPORTED_MODULE_1__.default, null);
+    }
+  }]);
+
+  return MemojiReactApp;
+}(react__WEBPACK_IMPORTED_MODULE_0__.Component);
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (MemojiReactApp);
+
+/***/ }),
+
+/***/ "./src/components/playground/playground.js":
+/*!*************************************************!*\
+  !*** ./src/components/playground/playground.js ***!
+  \*************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+//import React, { Component } from 'react';
+var Playground = /*#__PURE__*/function (_Component) {
+  _inherits(Playground, _Component);
+
+  var _super = _createSuper(Playground);
+
+  function Playground() {
+    _classCallCheck(this, Playground);
 
     return _super.apply(this, arguments);
   }
 
-  _createClass(timerWrapper, [{
+  _createClass(Playground, [{
+    key: "placeCards",
+    value: function placeCards() {}
+  }, {
     key: "render",
     value: function render() {
-      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
-        className: "playground__timerWrapper"
-      }, " 01:00");
+      var cards = Array(12).fill('card'),
+          i;
+
+      for (i = 0; i < 12; i++) {
+        cards[i] += i;
+      }
+
+      return /*#__PURE__*/React.createElement("div", {
+        className: "plaground"
+      }, /*#__PURE__*/React.createElement("div", {
+        className: "playground__cardsContainer"
+      }), cards.map(function (item) {
+        return /*#__PURE__*/React.createElement("div", {
+          className: "card playground__card",
+          id: item
+        }, /*#__PURE__*/React.createElement("div", {
+          className: "card__flipper"
+        }, /*#__PURE__*/React.createElement("div", {
+          className: "card__wrapperFront"
+        }), /*#__PURE__*/React.createElement("div", {
+          className: "card__wrapperBack"
+        })));
+      }));
     }
   }]);
 
-  return timerWrapper;
-}(react__WEBPACK_IMPORTED_MODULE_0__.Component);
+  return Playground;
+}(Component);
 
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (timerWrapper);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Playground);
 
 /***/ }),
 
@@ -30599,7 +30686,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _style_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./style.scss */ "./src/style.scss");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
-/* harmony import */ var _components_playground_timerWrapper_timerWrapper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./components/playground/__timerWrapper/__timerWrapper.js */ "./src/components/playground/__timerWrapper/__timerWrapper.js");
+/* harmony import */ var _components_MemojiReactApp_MemojiReactApp__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./components/MemojiReactApp/MemojiReactApp */ "./src/components/MemojiReactApp/MemojiReactApp.js");
 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -31017,7 +31104,7 @@ MEMOJIAPP.startgame = function () {
   MEMOJIAPP.putCardsOnTable();
   MEMOJIAPP.clickControl();
   MEMOJIAPP.clickPopupButton();
-  react_dom__WEBPACK_IMPORTED_MODULE_2__.render( /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.createElement("timerWrapper", null), document.querySelector('#root'));
+  react_dom__WEBPACK_IMPORTED_MODULE_2__.render( /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.createElement(_components_MemojiReactApp_MemojiReactApp__WEBPACK_IMPORTED_MODULE_3__.default, null), document.querySelector('#root'));
 }();
 })();
 

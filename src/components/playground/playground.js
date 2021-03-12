@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 
 class Playground extends Component {
-    placeCards() {
 
-    }
     
     render() {
         let cards = Array(12).fill('card'),
@@ -12,16 +10,18 @@ class Playground extends Component {
             cards[i] += i;
         }
         return (
-            <div className='plaground'>
-                <div className='playground__cardsContainer'></div>
-                {cards.map(item => (
-                    <div className='card playground__card' id={item}>
-                        <div className='card__flipper'>
-                            <div className='card__wrapperFront'></div>
-                            <div className='card__wrapperBack'></div>
+            <div className='playground'>
+                <div className='playground__cardsContainer'>
+                    {cards.map(item => (
+                        <div key={item} className='card playground__card' id={item}>
+                            <div className='card__flipper' onClick={this.props.onClick}>
+                                <div className='card__wrapperFront'></div>
+                                <div className='card__wrapperBack'></div>
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    ))}
+                </div>
+                <div className='playground__timerWrapper'>01:00</div>
             </div>
         );
     }
