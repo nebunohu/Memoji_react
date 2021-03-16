@@ -4,6 +4,22 @@ import MenuBlock from '../menuBlock/menuBlock';
 import ModalWindow from '../modalWindow/modalWindow';
 import MEMOJIAPP from '../../script.js'
 
+class Card {
+	constructor(id) {
+		this.id = id;
+    }
+    setFlipperNode(flipper) {
+        this.flipper = flipper;
+    }
+
+    setBackNode(back) {
+        this.back = back;
+    }
+    setImageNode(image) {
+        this.image = image;
+    }
+}
+
 class MemojiReactApp extends Component {
 
     constructor(props) {
@@ -18,6 +34,7 @@ class MemojiReactApp extends Component {
                 win: false,                     // флаг победы в игре
                 lose: false,                    // флаг поражения в игре
             },
+            DOMCreated: false,
             diffucultyLevel: 0,
             resultTable: {
                 playerName: null,
@@ -28,19 +45,81 @@ class MemojiReactApp extends Component {
                 id: 0,
             },
             cards: [],
-            backs: [],//Array.from(document.querySelectorAll('.card__wrapperBack')),
-            flippers: null,//Array.from(document.querySelectorAll('.card__flipper')),
-            cardsContainer: null,//document.querySelector('.playground__cardsContainer'),
+            backs: [],
+            flippers: null,
+            cardsContainer: null,
             openedCards: [],
             cardsState: Array(12).fill(false),
         };
+    }
+
+    endGame() {
+        let popupWindow = document.querySelector('.afterGame'),
+            modalWindow = document.querySelector('.modalWindow'),
+            timer = {...this.timer};
+    
+        modalWindow.classList.add('visible');
+        popupWindow.classList.add('visible');
+        clearInterval(timer.id);
+        
+    }
+
+    gameEndingTextOunput(text) {
+        let letters,
+            letterSpan,
+            deletingText = document.querySelectorAll('.popupText span'),
+            popupText = document.querySelector(".popupText"),
+            i;
+    
+        for(i = 0; i < deletingText.length; i++) {
+            popupText.removeChild(deletingText[i]);
+        }
+    
+        letters = text.split('.');
+    
+        for(i = 0; i < letters.length; i++) {
+            letterSpan = document.createElement('span')
+            letterSpan.textContent = letters[i];
+            letterSpan.classList.add('letter'+(i+1));
+            popupText.appendChild(letterSpan);
+        }
+        
+    }
+
+    win() {
+        let win = 1,        
+            cards = this.state.cards.slice(0),
+            flags = {...this.state.flags},
+            i;
+    
+            this.gameEndingTextOunput('W.i.n');
+    
+        for(i = 0; i < cards.length; i++)
+        {
+            if(!cards[i].back.classList.contains('correct')) win = 0;
+        }
+        if(win)
+        {
+            flags.win = 1;
+            this.setState({
+                flags: flags,
+            });
+            this.endGame();
+        } 
+    
+    }
+
+    lose() {
+        this.gameEndingTextOunput('L.o.s.e');
+        
+        this.endGame();
     }
 
     decrTimer() {
         let timerWrapper = document.querySelector('.playground__timerWrapper'),
             minutes, seconds,
             minutesStr, secondsStr,     // Значения минут и секунд записанные строкой 
-            timer = this.state.timer;
+            timer = {...this.state.timer};
         timer.counter--;
         minutes = Math.floor(timer.counter / 60);
         minutesStr = minutes.toString();
@@ -53,20 +132,20 @@ class MemojiReactApp extends Component {
        if(!timer.counter)
        {
            clearInterval(timer.id);
-           MEMOJIAPP.lose();
+           this.lose();
        }
        this.setState({
            timer: timer,
        });
     }
 
-    clickHandler(event) {
+    playgroundClickHandler(event) {
         let currentCard = null,
-            flags = this.state.flags,
-            cards = MEMOJIAPP.cards,
-            openedCards = this.state.openedCards,
             currentFlipper = null,
-            timer = this.state.timer,
+            flags = {...this.state.flags},
+            cards = this.state.cards.slice(0),
+            openedCards = this.state.openedCards.slice(0),
+            timer = {...this.state.timer},
             i;
         if(event.target.closest('.card__flipper'))
         {
@@ -74,13 +153,6 @@ class MemojiReactApp extends Component {
             if(flags.firstClick)
             {
                 flags.firstClick = false;
-
-                let backs = Array.from(document.querySelectorAll('.card__wrapperBack'));
-                this.setState({
-                    backs: backs,
-                    flippers: Array.from(document.querySelectorAll('.card__flipper')),
-                    cardsContainer: document.querySelector('.playground__cardsContainer'),
-                });
 
                 timer.id = window.setInterval(() => this.decrTimer(),1000);
             }
@@ -114,9 +186,13 @@ class MemojiReactApp extends Component {
         })
     }
 
+    modalWindowClickHandler() {
+        
+    }
+
     compareCards(openedCards) {
         let correct = 1,
-            cards = MEMOJIAPP.cards,
+            cards = this.state.cards.slice(0),
             i;
         switch(openedCards.length)
         {
@@ -152,8 +228,61 @@ class MemojiReactApp extends Component {
         {
             if(!cards[i].back.classList.contains('correct')) correct = 0;
         }
-        if(correct) MEMOJIAPP.win();
+        if(correct) this.win();
             
+    }
+
+    /* 
+        Функция перемешивает эмодзи в случайном порядке 
+    */
+    mixEmojis() {
+        let emojis = ['🐰', '🐰', '🐶', '🐶', '🐱', '🐱', '🐼', '🐼', '🐵', '🐵', '🐯','🐯'];
+
+        emojis = emojis.sort(function(){
+            return Math.random() - 0.5;
+        });
+        return emojis;
+    }
+    putCardsOnTable() {
+        let emojis,
+            imgsArray = [],
+            i,
+            backs = this.state.backs.slice(0),
+            cards = this.state.cards.slice(0),
+            flippers = this.state.flippers.slice(0);
+    
+        emojis = this.mixEmojis();
+    
+        for(i=0; i < emojis.length; i++)
+        {
+            imgsArray.push(document.createElement('div'));
+            imgsArray[i].textContent = emojis[i];
+            imgsArray[i].className = 'image_wrapper';
+            backs[i].appendChild(imgsArray[i]);
+            cards.push(new Card(i));
+            cards[i].setFlipperNode(flippers[i]);
+            cards[i].setBackNode(backs[i]);
+            cards[i].setImageNode(imgsArray[i].textContent);
+        }
+    
+        this.setState({
+            backs: backs,
+            cards: cards,
+            DOMCreated: true,
+        });
+    }
+
+    componentDidMount() {
+        this.setState({
+            backs: Array.from(document.querySelectorAll('.card__wrapperBack')),
+            flippers: Array.from(document.querySelectorAll('.card__flipper')),
+            cardsContainer: document.querySelector('.playground__cardsContainer'),
+        });
+
+    }
+
+    componentDidUpdate() {
+        if(!this.state.DOMCreated) this.putCardsOnTable();
     }
 
     render() {
@@ -162,7 +291,7 @@ class MemojiReactApp extends Component {
                 <ModalWindow />
                 <MenuBlock />
                 <Playground 
-                    onClick = {(event) => this.clickHandler(event)}
+                    onClick = {(event) => this.playgroundClickHandler(event)}
                 />
             </div>
         );

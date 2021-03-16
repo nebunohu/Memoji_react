@@ -24,25 +24,11 @@ MEMOJIAPP.namespace = function(propsString) {
     return parent;
 }
 
-class Card {
-	constructor(id) {
-		this.id = id;
-    }
-    setFlipperNode(flipper) {
-        this.flipper = flipper;
-    }
 
-    setBackNode(back) {
-        this.back = back;
-    }
-    setImageNode(image) {
-        this.image = image;
-    }
-}
 
 /* 
     Функция перемешивает эмодзи в случайном порядке
-*/
+
 MEMOJIAPP.mixEmojis = function () {
     let emojis = ['🐰', '🐰', '🐶', '🐶', '🐱', '🐱', '🐼', '🐼', '🐵', '🐵', '🐯','🐯'];
 
@@ -50,9 +36,9 @@ MEMOJIAPP.mixEmojis = function () {
         return Math.random() - 0.5;
     });
     return emojis;
-}
+}*/
 
-MEMOJIAPP.putCardsOnTable = function () {
+/*MEMOJIAPP.putCardsOnTable = function () {
     let emojis,
         imgsArray = [],
         i,
@@ -74,7 +60,7 @@ MEMOJIAPP.putCardsOnTable = function () {
         cards[i].setImageNode(imgsArray[i].textContent);
     }
 
-}
+}*/
 
 MEMOJIAPP.putNewCards = function() {
     let emojis,
@@ -113,7 +99,7 @@ MEMOJIAPP.toDefault = function() {
 
 }
 
-MEMOJIAPP.endGame = function() {
+/*MEMOJIAPP.endGame = function() {
     let popupWindow = document.querySelector('.afterGame'),
         modalWindow = document.querySelector('.modalWindow'),
         timerId = MEMOJIAPP.timer.id;
@@ -122,7 +108,7 @@ MEMOJIAPP.endGame = function() {
     popupWindow.classList.add('visible');
     clearInterval(MEMOJIAPP.timer.id);
     
-}
+}*/
 
  MEMOJIAPP.clickPopupButton = function() {
     let popupButtons = document.querySelectorAll('.modalWindow__popupWindow .button'),
@@ -155,7 +141,7 @@ MEMOJIAPP.endGame = function() {
     }, true);
 }
 
-MEMOJIAPP.gameEndingTextOunput = function(text) {
+/*MEMOJIAPP.gameEndingTextOunput = function(text) {
     let letters,
         letterSpan,
         deletingText = document.querySelectorAll('.popupText span'),
@@ -175,9 +161,9 @@ MEMOJIAPP.gameEndingTextOunput = function(text) {
         popupText.appendChild(letterSpan);
     }
     
-}
+}*/
 
-MEMOJIAPP.win = function() {
+/*MEMOJIAPP.win = function() {
     let win = 1,        
         cards = MEMOJIAPP.cards,
         i;
@@ -194,13 +180,13 @@ MEMOJIAPP.win = function() {
         MEMOJIAPP.endGame();
     } 
 
-}
+}*/
 
-MEMOJIAPP.lose = function() {
+/*MEMOJIAPP.lose = function() {
     MEMOJIAPP.gameEndingTextOunput('L.o.s.e');
     
     MEMOJIAPP.endGame();
-}
+}*/
 
 
 
@@ -276,41 +262,6 @@ MEMOJIAPP.lose = function() {
 MEMOJIAPP.startgame = (function (){
     ReactDOM.render(<MemojiReactApp />, document.querySelector('#root'));
 
-    MEMOJIAPP.namespace('cards'); // Массив всех карточек на игровом поле
-    MEMOJIAPP.cards = [];
-    MEMOJIAPP.namespace('backs'); // Массив всех задников на игровом поле
-    MEMOJIAPP.backs = Array.from(document.querySelectorAll('.card__wrapperBack'));
-    MEMOJIAPP.namespace('flippers'); // Массив всех поворачивающихся элементов карт
-    MEMOJIAPP.flippers = Array.from(document.querySelectorAll('.card__flipper'));
-    MEMOJIAPP.namespace('cardsContainer'); // контейнер для карт на игровом поле
-    MEMOJIAPP.cardsContainer = document.querySelector('.playground__cardsContainer');
-    MEMOJIAPP.namespace('openedCards'); // перевернутые карты
-    MEMOJIAPP.openedCards = [];
-    MEMOJIAPP.namespace('flags.firstClick'); // флаг начала игры
-    MEMOJIAPP.flags.firstClick = 1;
-    MEMOJIAPP.namespace('flags.menuOpened'); // флаг открытия меню игры
-    MEMOJIAPP.flags.menuOpened = 0;
-    MEMOJIAPP.namespace('flags.difficultyWindowOpened'); // флаг открытия меню игры
-    MEMOJIAPP.flags.difficultyWindowOpened = 0;
-    MEMOJIAPP.namespace('flags.recordsTableOpened'); // флаг открытия меню игры
-    MEMOJIAPP.flags.recordsTableOpened = 0;
-    MEMOJIAPP.namespace('flags.pause'); // флаг паузы игры
-    MEMOJIAPP.flags.pause = 0;
-    MEMOJIAPP.namespace('flags.win'); // флаг победы в игре
-    MEMOJIAPP.flags.win = 0;
-    MEMOJIAPP.namespace('flags.lose'); // флаг поражения в игре
-    MEMOJIAPP.flags.lose = 0;
-    MEMOJIAPP.namespace('timer.counter'); // счетчик игрового таймера 
-    MEMOJIAPP.timer.counter = 60;
-    MEMOJIAPP.namespace('timer.id'); // идентификатор игрового таймера
-    MEMOJIAPP.timer.id = 0;
-    MEMOJIAPP.namespace('diffucultyLevel');
-    MEMOJIAPP.difficultyLevel = 0;
-    MEMOJIAPP.namespace('resultTable.playerName');
-    MEMOJIAPP.namespace('resultTable.score');
-
-    MEMOJIAPP.putCardsOnTable();
-    //MEMOJIAPP.clickControl();
     MEMOJIAPP.clickPopupButton();
 
     
