@@ -1,6 +1,45 @@
 import React, { Component } from 'react';
 
 class ModalWindow extends Component {
+
+    clickPopupButton() {
+        let popupButtons = document.querySelectorAll('.modalWindow__popupWindow .button'),
+            modalWindow = document.querySelector('.modalWindow');
+    
+        modalWindow.addEventListener("mousedown", function(event) {
+            let button = event.target.closest('.modalWindow__popupWindow .button');
+            if(button == popupButtons[0] ||
+                button == popupButtons[1] ||
+                button == popupButtons[2] ||
+                button == popupButtons[3]) {
+    
+                button.classList.add('pressed');
+            }
+            
+        }, true);
+        modalWindow.addEventListener("mouseup", this.mouseUpListener.bind(this,popupButtons, modalWindow), true);
+    }
+
+    mouseUpListener(popupButtons, modalWindow, event) {
+ 
+        let button = event.target.closest('.modalWindow__popupWindow .button'),
+            popupWindow = event.target.closest('.modalWindow__popupWindow');
+        if(button == popupButtons[0] ||
+            button == popupButtons[1] ||
+            button == popupButtons[2] ||
+            button == popupButtons[3])
+        {
+            button.classList.remove('pressed');
+            modalWindow.classList.remove('visible');
+            popupWindow.classList.remove('visible');
+            if(button === popupButtons[0]) this.props.toDefault();
+        }
+    }
+
+    componentDidMount() {
+        this.clickPopupButton();
+    }
+
     render() {
         return (
             <div className="modalWindow">

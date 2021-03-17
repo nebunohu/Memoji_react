@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 class MenuBlock extends Component {
     render() {
         return (
-            <div className="menuBlock">
+            <div className="menuBlock" onClick={this.props.onClick}>
                 <div className="menuBlock__burgerButton">
                     <div className="menuBlock__menuButtonBar"></div>
                     <div className="menuBlock__menuButtonBar"></div>

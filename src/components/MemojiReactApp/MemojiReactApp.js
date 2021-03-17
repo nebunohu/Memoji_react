@@ -186,8 +186,72 @@ class MemojiReactApp extends Component {
         })
     }
 
-    modalWindowClickHandler() {
+    modalWindowClickHandler(event) {
+        if(event.target.closest('.pauseWindow .button')) {
+            MEMOJIAPP.flags.pause = 0;
+            modalWindow.classList.remove('visible');
+            pauseWindow.classList.remove('visible');
+            MEMOJIAPP.timer.id = window.setInterval(() => MEMOJIAPP.decrTimer(),1000);
+
+        } else if(!event.target.closest('.modalWindow__popupWindow')) {
+            MEMOJIAPP.flags.difficultyWindowOpened = 0;
+            difficultyWindow.classList.remove('visible');
+
+            MEMOJIAPP.flags.recordsTableWindowOpened = 0;
+            recordsWindow.classList.remove('visible');
+
+            if(!MEMOJIAPP.flags.pause) {
+                modalWindow.classList.remove('visible');
+            }
+            
+
+        } 
+    }
+
+    menuBlockClickHandler(event) {
+        let menuList = document.querySelector(".menuBlock__list"),
+            modalWindow = document.querySelector(".modalWindow"),
+            pauseWindow = document.querySelector(".pauseWindow"),
+            difficultyWindow = document.querySelector(".difficultyWindow"),
+            recordsWindow = document.querySelector(".recordsWindow"),
+            timer = {...this.state.timer},
+            flags = {...this.state.flags};
+        if(this.state.flags.menuOpened) {
+            if(event.target.closest('#newGame')) {
+                this.toDefault();
+                clearInterval(timer.id);
         
+            } else if (event.target.closest('#difficulty')) {
+                flags.difficultyWindowOpened = 1;
+                modalWindow.classList.add('visible');
+                difficultyWindow.classList.add('visible');
+
+            } else if (event.target.closest('#recordsTable')) {
+                flags.recordsTableOpened = 1;
+                modalWindow.classList.add('visible');
+                recordsWindow.classList.add('visible');
+            } 
+
+            flags.menuOpened = 0;
+            menuList.classList.remove('visible');
+        } else {
+            if(event.target.closest('.menuBlock')) {
+                if(event.target.closest('.menuBlock__pauseButton')) {
+                    flags.pause = 1;
+                    modalWindow.classList.add('visible');
+                    pauseWindow.classList.add('visible');
+                    clearInterval(timer.id);
+    
+                } else if(event.target.closest('.menuBlock__burgerButton')) {
+                    flags.menuOpened = 1;
+                    menuList.classList.add('visible');
+    
+                } 
+            }
+        }
+        this.setState({
+            flags: flags,
+        });
     }
 
     compareCards(openedCards) {
@@ -272,6 +336,50 @@ class MemojiReactApp extends Component {
         });
     }
 
+    putNewCards(cards) {
+        let emojis,
+            imgsArray = Array.from(document.querySelectorAll('.image_wrapper'));
+            //cards = this.cards.slice(0);
+    
+        emojis = this.mixEmojis();
+        for(let i =0; i < emojis.length; i++)
+        {
+            cards[i].image = emojis[i];
+            imgsArray[i].textContent = emojis[i];
+        }
+
+    }
+
+    toDefault() {
+        let timerObj = document.querySelector('.playground__timerWrapper'),
+            cards = this.state.cards.slice(0),
+            openedCards = this.state.openedCards.slice(0),
+            flags = {...this.flags},
+            timer = {...this.timer},
+            i;
+    
+        for(i = 0; i < cards.length; i++)
+        {
+            cards[i].flipper.classList.remove('rotate');
+            cards[i].back.classList.remove('correct'); 
+            cards[i].back.classList.remove('incorrect');
+        }
+        openedCards.splice(0, openedCards.length);
+        flags.firstClick = 1;
+        timer.counter = 60;
+        timerObj.textContent = '01:00';
+        flags.lose = 0;
+        flags.win = 0;
+        this.putNewCards(cards);
+    
+        this.setState({
+            cards: cards,
+            openedCards: openedCards,
+            flags: flags,
+            timer: timer,
+        });
+    }
+
     componentDidMount() {
         this.setState({
             backs: Array.from(document.querySelectorAll('.card__wrapperBack')),
@@ -288,8 +396,13 @@ class MemojiReactApp extends Component {
     render() {
         return (
             <div>
-                <ModalWindow />
-                <MenuBlock />
+                <ModalWindow 
+                    toDefault={this.toDefault.bind(this)}
+                    onClick = {(event) => this.modalWindowClickHandler(event)}
+                />
+                <MenuBlock 
+                    onClick = {(event) => this.menuBlockClickHandler(event)}
+                />
                 <Playground 
                     onClick = {(event) => this.playgroundClickHandler(event)}
                 />
