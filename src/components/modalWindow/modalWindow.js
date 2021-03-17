@@ -76,6 +76,20 @@ class ModalWindow extends Component {
                 </div>
                 <div className="modalWindow__popupWindow recordsWindow">
                     <span>Records table</span>
+                    <table className="modalWindow__table">
+                        <tr>
+                            <th>Name</th>    
+                            <th>Score</th>
+                        </tr>    
+                        <tr>
+                            <td>User1</td>
+                            <td>1000</td>
+                        </tr>
+                        <tr>
+                            <td>User2</td>
+                            <td>900</td>
+                        </tr>
+                    </table>
                     <div className="button">
                         <span>Back</span>
                     </div>
