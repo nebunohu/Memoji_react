@@ -1,0 +1,17 @@
+.modalWindow__table {
+    font-size: 24px;
+    border-collapse: collapse;
+}
+
+.modalWindow__table,
+.modalWindow__table td,
+.modalWindow__table th {
+    border: 2px solid black;
+}
+
+.modalWindow__table td,
+.modalWindow__table th {
+    height: 30px;
+    width: 100px;
+    padding: 5px 8px;
+}

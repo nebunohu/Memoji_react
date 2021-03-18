@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import Playground from '../playground/playground';
 import MenuBlock from '../menuBlock/menuBlock';
 import ModalWindow from '../modalWindow/modalWindow';
-import MEMOJIAPP from '../../script.js'
+import UserInfo from '../userInfo/userInfo';
+
 
 class Card {
 	constructor(id) {
@@ -28,28 +29,28 @@ class MemojiReactApp extends Component {
             flags: {
                 firstClick: true,               // флаг начала игры
                 menuOpened: false,              // флаг открытия меню игры
-                difficultyWindowOpened: false,  // флаг открытия меню выбора сложности
+                settingsWindowOpened: false,    // флаг открытия меню выбора сложности
                 recordsTableOpened: false,      // флаг открытия таблицы рекордов
                 pause: false,                   // флаг паузы игры
                 win: false,                     // флаг победы в игре
                 lose: false,                    // флаг поражения в игре
             },
-            DOMCreated: false,
-            diffucultyLevel: 0,
+            DOMCreated: false,                  // флаг 
+            difficultyLevel: 0,                 // уровень сложности
             resultTable: {
-                playerName: null,
-                score: null,
+                playerName: null,               // имя игрока
+                score: null,                    // счёт
             },
             timer: {
-                counter: 60,
-                id: 0,
+                counter: 60,                    // счетчик таймера
+                id: 0,                          // идентификатор таймера
             },
-            cards: [],
-            backs: [],
-            flippers: null,
-            cardsContainer: null,
-            openedCards: [],
-            cardsState: Array(12).fill(false),
+            cards: [],                          // массив карт на экране
+            backs: [],                          // массив обратных сторон карт
+            flippers: null,                     // массив флипперов карт
+            cardsContainer: null,               // объект div-контейнера для карт
+            openedCards: [],                    // открытые карты
+            cardsState: Array(12).fill(false),  // статус карты на поле
         };
     }
 
@@ -64,6 +65,9 @@ class MemojiReactApp extends Component {
         
     }
 
+/*
+    Функция вывода текста в конце игры
+*/
     gameEndingTextOunput(text) {
         let letters,
             letterSpan,
@@ -187,32 +191,41 @@ class MemojiReactApp extends Component {
     }
 
     modalWindowClickHandler(event) {
+        let modalWindow = document.querySelector(".modalWindow"),
+            pauseWindow = document.querySelector(".pauseWindow"),
+            settingsWindow = document.querySelector(".settingsWindow"),
+            recordsWindow = document.querySelector(".recordsWindow"),
+            flags = {...this.state.flags},
+            timer = {...this.state.timer};
+
         if(event.target.closest('.pauseWindow .button')) {
-            MEMOJIAPP.flags.pause = 0;
+            flags.pause = 0;
             modalWindow.classList.remove('visible');
             pauseWindow.classList.remove('visible');
-            MEMOJIAPP.timer.id = window.setInterval(() => MEMOJIAPP.decrTimer(),1000);
+            timer.id = window.setInterval(() => this.decrTimer(),1000);
 
         } else if(!event.target.closest('.modalWindow__popupWindow')) {
-            MEMOJIAPP.flags.difficultyWindowOpened = 0;
-            difficultyWindow.classList.remove('visible');
+            flags.settingsWindowOpened = 0;
+            settingsWindow.classList.remove('visible');
 
-            MEMOJIAPP.flags.recordsTableWindowOpened = 0;
+            flags.recordsTableWindowOpened = 0;
             recordsWindow.classList.remove('visible');
 
-            if(!MEMOJIAPP.flags.pause) {
+            if(!flags.pause) {
                 modalWindow.classList.remove('visible');
             }
-            
-
         } 
+        this.setState({
+            flags: flags,
+            timer: timer,
+        });
     }
 
     menuBlockClickHandler(event) {
         let menuList = document.querySelector(".menuBlock__list"),
             modalWindow = document.querySelector(".modalWindow"),
             pauseWindow = document.querySelector(".pauseWindow"),
-            difficultyWindow = document.querySelector(".difficultyWindow"),
+            settingsWindow = document.querySelector(".settingsWindow"),
             recordsWindow = document.querySelector(".recordsWindow"),
             timer = {...this.state.timer},
             flags = {...this.state.flags};
@@ -221,10 +234,10 @@ class MemojiReactApp extends Component {
                 this.toDefault();
                 clearInterval(timer.id);
         
-            } else if (event.target.closest('#difficulty')) {
-                flags.difficultyWindowOpened = 1;
+            } else if (event.target.closest('#settings')) {
+                flags.settingsWindowOpened = 1;
                 modalWindow.classList.add('visible');
-                difficultyWindow.classList.add('visible');
+                settingsWindow.classList.add('visible');
 
             } else if (event.target.closest('#recordsTable')) {
                 flags.recordsTableOpened = 1;
@@ -307,6 +320,7 @@ class MemojiReactApp extends Component {
         });
         return emojis;
     }
+
     putCardsOnTable() {
         let emojis,
             imgsArray = [],
@@ -398,6 +412,7 @@ class MemojiReactApp extends Component {
             <div>
                 <ModalWindow 
                     toDefault={this.toDefault.bind(this)}
+                    {/*difficulty={this.state.difficultyLevel}*/}
                     onClick = {(event) => this.modalWindowClickHandler(event)}
                 />
                 <MenuBlock 
@@ -406,6 +421,7 @@ class MemojiReactApp extends Component {
                 <Playground 
                     onClick = {(event) => this.playgroundClickHandler(event)}
                 />
+                <UserInfo playerName="User1" />
             </div>
         );
     }

@@ -23,7 +23,9 @@ class ModalWindow extends Component {
     mouseUpListener(popupButtons, modalWindow, event) {
  
         let button = event.target.closest('.modalWindow__popupWindow .button'),
-            popupWindow = event.target.closest('.modalWindow__popupWindow');
+            popupWindow = event.target.closest('.modalWindow__popupWindow'),            
+            i;
+
         if(button == popupButtons[0] ||
             button == popupButtons[1] ||
             button == popupButtons[2] ||
@@ -34,6 +36,18 @@ class ModalWindow extends Component {
             popupWindow.classList.remove('visible');
             if(button === popupButtons[0]) this.props.toDefault();
         }
+    }
+
+    handleChange() {
+        let difficultyLvlInputs = Array.from(document.querySelectorAll('.difficultyLevel')),
+            i;
+
+        for(i = 0; i < difficultyLvlInputs.length; i++) {
+            if(difficultyLvlInputs[i].checked === true) {
+                this.props.difficulty = i;
+            }
+        }
+        
     }
 
     componentDidMount() {
@@ -49,46 +63,60 @@ class ModalWindow extends Component {
                         <span>Try again</span>
                     </div>
                 </div>
-                <div className="modalWindow__popupWindow difficultyWindow">
-                    <ul>
-                        <li>
-                            <input className="difficultyLevel" type="radio" name="difficultyLevel"  value="low" />    
-                            <span>Low</span>
-                        </li>
-                        <li>
-                            <input className="difficultyLevel" type="radio" name="difficultyLevel"  value="medium" />
-                            <span>Medium</span>
-                        </li>
-                        <li>
-                            <input className="difficultyLevel" type="radio" name="difficultyLevel"  value="hard" />
-                            <span>High</span>
-                        </li>
-                    </ul>
-                    <div className="button">
-                        <span>Confirm</span>
-                    </div>
+                <div className="modalWindow__popupWindow settingsWindow">
+                    <span className="modalWindow__popupWindowHeader">Game settings</span>
+                    <form>
+                        <label htmlFor="GET-name">Name:</label>
+                        <input id="GET-name" type="text" name="name"></input>
+                   
+                        <ul>
+                            <li>
+                                <input className="difficultyLevel" type="radio" name="difficultyLevel"  value="low" defaultChecked onChange={this.handleChange} />    
+                                <span>Low</span>
+                            </li>
+                            <li>
+                                <input className="difficultyLevel" type="radio" name="difficultyLevel"  value="medium" onChange={this.handleChange} />
+                                <span>Medium</span>
+                            </li>
+                            <li>
+                                <input className="difficultyLevel" type="radio" name="difficultyLevel"  value="hard" onChange={this.handleChange} />
+                                <span>High</span>
+                            </li>
+                        </ul> 
+                    </form>
+                    <label htmlFor="submit">
+                        <div className="button">
+                            <span>Confirm</span>
+                        </div>
+                    </label>
+                    <input className="modalWindow__popupWindowSubmitInput" type="submit" id="submit" value="Confirm"></input>
+                    
                 </div>
                 <div className="modalWindow__popupWindow pauseWindow">
-                    <span>Pause</span>
-                    <div className="button">
+                    <span className="modalWindow__popupWindowHeader">Pause</span>
+                    <div className="button" onClick={this.props.onClick}>
                         <span>Continue</span>
                     </div>
                 </div>
                 <div className="modalWindow__popupWindow recordsWindow">
-                    <span>Records table</span>
+                    <span className="modalWindow__popupWindowHeader">Records table</span>
                     <table className="modalWindow__table">
-                        <tr>
-                            <th>Name</th>    
-                            <th>Score</th>
-                        </tr>    
-                        <tr>
-                            <td>User1</td>
-                            <td>1000</td>
-                        </tr>
-                        <tr>
-                            <td>User2</td>
-                            <td>900</td>
-                        </tr>
+                        <thead>
+                            <tr>
+                                <th>Name</th>    
+                                <th>Score</th>
+                            </tr>
+                        </thead>
+                        <tbody>    
+                            <tr>
+                                <td className="tdName">User1</td>
+                                <td>1000</td>
+                            </tr>
+                            <tr>
+                                <td className="tdName">User2</td>
+                                <td>900</td>
+                            </tr>
+                        </tbody>
                     </table>
                     <div className="button">
                         <span>Back</span>

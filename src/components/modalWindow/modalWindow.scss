@@ -1,6 +1,8 @@
 
 @import "./__popupWindow/__popupWindow";
 @import "./__table/__table.scss";
+@import "./__popupWindowHeader/__popupWindowHeader";
+@import "./__popupWindowSubmitInput/_popupWindowSubmitInput";
 
 .modalWindow {
     display: none;
