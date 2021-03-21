@@ -38,7 +38,7 @@ class ModalWindow extends Component {
         }
     }
 
-    handleChange() {
+    /*handleChange() {
         let difficultyLvlInputs = Array.from(document.querySelectorAll('.difficultyLevel')),
             i;
 
@@ -48,7 +48,7 @@ class ModalWindow extends Component {
             }
         }
         
-    }
+    }*/
 
     componentDidMount() {
         this.clickPopupButton();
@@ -67,19 +67,19 @@ class ModalWindow extends Component {
                     <span className="modalWindow__popupWindowHeader">Game settings</span>
                     <form>
                         <label htmlFor="GET-name">Name:</label>
-                        <input id="GET-name" type="text" name="name"></input>
+                        <input id="GET-name" type="text" name="name" onChange={this.props.onChange}></input>
                    
                         <ul>
                             <li>
-                                <input className="difficultyLevel" type="radio" name="difficultyLevel"  value="low" defaultChecked onChange={this.handleChange} />    
+                                <input className="difficultyLevel" type="radio" name="difficultyLevel"  value="low" defaultChecked onChange={this.props.onChange} />    
                                 <span>Low</span>
                             </li>
                             <li>
-                                <input className="difficultyLevel" type="radio" name="difficultyLevel"  value="medium" onChange={this.handleChange} />
+                                <input className="difficultyLevel" type="radio" name="difficultyLevel"  value="medium" onChange={this.props.onChange} />
                                 <span>Medium</span>
                             </li>
                             <li>
-                                <input className="difficultyLevel" type="radio" name="difficultyLevel"  value="hard" onChange={this.handleChange} />
+                                <input className="difficultyLevel" type="radio" name="difficultyLevel"  value="hard" onChange={this.props.onChange} />
                                 <span>High</span>
                             </li>
                         </ul> 

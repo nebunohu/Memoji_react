@@ -394,6 +394,34 @@ class MemojiReactApp extends Component {
         });
     }
 
+    onDifChangeHandler(event) {
+        let difficultyLvlInputs = Array.from(document.querySelectorAll('.difficultyLevel')),
+            difficultyLevel,
+            playerName,
+            nameField = document.querySelector('.userInfo__name'),
+            i;
+
+        if(event.target.closest('.settingsWindow ul')) {
+            for(i = 0; i < difficultyLvlInputs.length; i++) {
+                if(difficultyLvlInputs[i].checked === true) {
+                    difficultyLevel = i;
+                }
+            }
+
+            this.setState({
+                difficultyLevel: difficultyLevel,
+            })
+        } else if(event.target.closest('.settingsWindow')) {    
+            playerName = event.target.value;
+            nameField.textContent = playerName;
+
+            this.setState({
+                playerName: playerName,
+            });
+        }
+        
+    }
+
     componentDidMount() {
         this.setState({
             backs: Array.from(document.querySelectorAll('.card__wrapperBack')),
@@ -412,7 +440,7 @@ class MemojiReactApp extends Component {
             <div>
                 <ModalWindow 
                     toDefault={this.toDefault.bind(this)}
-                    {/*difficulty={this.state.difficultyLevel}*/}
+                    onChange={this.onDifChangeHandler.bind(this)}
                     onClick = {(event) => this.modalWindowClickHandler(event)}
                 />
                 <MenuBlock 
