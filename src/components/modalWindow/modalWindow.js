@@ -85,7 +85,7 @@ class ModalWindow extends Component {
                         </ul> 
                     </form>
                     <label htmlFor="submit">
-                        <div className="button">
+                        <div className="button" onClick={this.props.onClick}>
                             <span>Confirm</span>
                         </div>
                     </label>

@@ -195,6 +195,7 @@ class MemojiReactApp extends Component {
             pauseWindow = document.querySelector(".pauseWindow"),
             settingsWindow = document.querySelector(".settingsWindow"),
             recordsWindow = document.querySelector(".recordsWindow"),
+            nameField = document.querySelector('.userInfo__name'),
             flags = {...this.state.flags},
             timer = {...this.state.timer};
 
@@ -204,6 +205,8 @@ class MemojiReactApp extends Component {
             pauseWindow.classList.remove('visible');
             timer.id = window.setInterval(() => this.decrTimer(),1000);
 
+        } else if(event.target.closest('.settingsWindow .button')) {
+            nameField.textContent = this.state.playerName;
         } else if(!event.target.closest('.modalWindow__popupWindow')) {
             flags.settingsWindowOpened = 0;
             settingsWindow.classList.remove('visible');
@@ -398,7 +401,6 @@ class MemojiReactApp extends Component {
         let difficultyLvlInputs = Array.from(document.querySelectorAll('.difficultyLevel')),
             difficultyLevel,
             playerName,
-            nameField = document.querySelector('.userInfo__name'),
             i;
 
         if(event.target.closest('.settingsWindow ul')) {
@@ -413,8 +415,7 @@ class MemojiReactApp extends Component {
             })
         } else if(event.target.closest('.settingsWindow')) {    
             playerName = event.target.value;
-            nameField.textContent = playerName;
-
+            
             this.setState({
                 playerName: playerName,
             });
