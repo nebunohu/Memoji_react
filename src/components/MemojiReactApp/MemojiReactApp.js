@@ -57,7 +57,7 @@ class MemojiReactApp extends Component {
     endGame() {
         let popupWindow = document.querySelector('.afterGame'),
             modalWindow = document.querySelector('.modalWindow'),
-            timer = {...this.timer};
+            timer = {...this.state.timer};
     
         modalWindow.classList.add('visible');
         popupWindow.classList.add('visible');
@@ -450,7 +450,7 @@ class MemojiReactApp extends Component {
                 <Playground 
                     onClick = {(event) => this.playgroundClickHandler(event)}
                 />
-                <UserInfo playerName="User1" />
+                {/*<UserInfo playerName="User1" />*/}
             </div>
         );
     }

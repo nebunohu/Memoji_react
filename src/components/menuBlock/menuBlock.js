@@ -15,8 +15,8 @@ class MenuBlock extends Component {
                 </div>
                 <ul className="menuBlock__list">
                     <li className="menuBlock__listItem" id="newGame">New game</li>
-                    <li className="menuBlock__listItem" id="settings">Game Settings</li>
-                    <li className="menuBlock__listItem" id="recordsTable">Records table</li>
+                    {/*<li className="menuBlock__listItem" id="settings">Game Settings</li>
+                    <li className="menuBlock__listItem" id="recordsTable">Records table</li>*/}
                 </ul>
             </div>
         );
