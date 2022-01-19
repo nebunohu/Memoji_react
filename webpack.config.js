@@ -6,11 +6,12 @@ module.exports = {
     entry: path.resolve(__dirname, "./src/script.js"),
     mode: "development",
     output: {
-        path: path.resolve(__dirname, "dist"),
-        filename: "script.js"
+        path: path.resolve(__dirname, "build"),
+        filename: "script.js",
+        clean: true
       },
     devServer: {
-        contentBase: path.join(__dirname, "dist"),
+        contentBase: path.join(__dirname, "build"),
         compress: true,
         port: 9000,
         watchContentBase: true,
