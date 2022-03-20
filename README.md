@@ -15,9 +15,5 @@
 `npm install`<br>
 Для запуска приложения на [http://localhost:3000](http://localhost:3000) введите в терминале команду:<br>
 `npm run start`<br>
-Для запуска unit тестов введите в терминале команду:<br>
-`npm run test`<br>
-Для запуска UI тестов введите в терминале команду:<br>
-`npm run cypress:open`<br>
 Для размещения приложения на Github Pages введите в терминале команду:<br>
 `npm run deploy`
