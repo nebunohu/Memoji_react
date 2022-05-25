@@ -145,40 +145,39 @@ const MemojiReactApp = () => {
         let currentCard = null,
             currentFlipper = null,
             flags = {...state.flags},
-            cards = state.cards.slice(0),
-            openedCards = state.openedCards.slice(0),
+            cards = [...state.cards],
+            openedCards = state.openedCards?.length ? [...state.openedCards] : [],
             timer = {...state.timer},
             i;
-        if(event.target.closest('.card__flipper'))
-        {
-            currentFlipper = event.target.closest('.card__flipper');
-            if(flags.firstClick)
-            {
-                flags.firstClick = false;
 
-                timer.id = window.setInterval(() => decrTimer(),1000);
-            }
-    
-            // сохранение индекса текущего элемента
-            for(i = 0; i < cards.length;  i++)
+        currentFlipper = event.currentTarget;
+        if(flags.firstClick)
+        {
+            flags.firstClick = false;
+
+            timer.id = window.setInterval(() => decrTimer(),1000);
+        }
+
+        // сохранение индекса текущего элемента
+        for(i = 0; i < cards.length;  i++)
+        {
+            if(cards[i].flipper === currentFlipper)
             {
-                if(cards[i].flipper === currentFlipper)
-                {
-                    currentCard = cards[i];
-                }
-            }
-            // переворот карточки
-            if(!(currentCard.back.classList.contains('correct') || currentCard.back.classList.contains('incorrect')) && !currentCard.flipper.classList.contains('rotate'))
-            {
-                openedCards.push(currentCard);
-                currentCard.flipper.classList.add('rotate');
-            }
-            else if(!(currentCard.back.classList.contains('correct') || currentCard.back.classList.contains('incorrect')))
-            {
-                currentCard.flipper.classList.remove('rotate');
-                openedCards.splice(0,1);
+                currentCard = cards[i];
             }
         }
+        // переворот карточки
+        if(!(currentCard.back.classList.contains('correct') || currentCard.back.classList.contains('incorrect')) && !currentCard.flipper.classList.contains('rotate'))
+        {
+            openedCards.push(currentCard);
+            currentCard.flipper.classList.add('rotate');
+        }
+        else if(!(currentCard.back.classList.contains('correct') || currentCard.back.classList.contains('incorrect')))
+        {
+            currentCard.flipper.classList.remove('rotate');
+            openedCards.splice(0,1);
+            }
+        
         if(openedCards.length > 1) compareCards(openedCards);
 
         setState({
@@ -334,7 +333,9 @@ const MemojiReactApp = () => {
             flippers = state.flippers.slice(0);
     
         emojis = mixEmojis();
-    
+        
+        if (cards.length) return;
+
         for(i=0; i < emojis.length; i++)
         {
             imgsArray.push(document.createElement('div'));
