@@ -7,16 +7,24 @@ module.exports = {
     mode: "development",
     output: {
         path: path.resolve(__dirname, "build"),
-        filename: "script.js",
+        filename: "[name].[contenthash].js",
         clean: true
       },
     devServer: {
-        contentBase: path.join(__dirname, "build"),
+        static: {
+            directory: path.join(__dirname, "build"),
+        },
         compress: true,
-        port: 9000,
-        watchContentBase: true,
-        progress: true,
-        stats: 'errors-only'
+         port: 3000,
+        //watchContentBase: true,
+        // progress: true,
+        client: {
+          overlay: {
+            errors: true,
+            warnings: false,
+          }
+        },
+        // clientLogLevel: 'info',
     },
     devtool: 'source-map',
     /*'babel': {
@@ -36,7 +44,7 @@ module.exports = {
                 }
             },
             {
-                test: /\.m?js$/,
+                test: /\.m?jsx?$/,
                 exclude: /(node_modules|bower_components)/,
                 use: {
                     loader: "babel-loader"

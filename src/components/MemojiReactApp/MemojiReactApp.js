@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import Playground from '../playground/playground';
 import MenuBlock from '../menuBlock/menuBlock';
 import ModalWindow from '../modalWindow/modalWindow';
@@ -21,43 +21,39 @@ class Card {
     }
 }
 
-class MemojiReactApp extends Component {
+const MemojiReactApp = () => {
+    const [state, setState] = useState({
+        flags: {
+            firstClick: true,               // флаг начала игры
+            menuOpened: false,              // флаг открытия меню игры
+            settingsWindowOpened: false,    // флаг открытия меню выбора сложности
+            recordsTableOpened: false,      // флаг открытия таблицы рекордов
+            pause: false,                   // флаг паузы игры
+            win: false,                     // флаг победы в игре
+            lose: false,                    // флаг поражения в игре
+        },
+        DOMCreated: false,                  // флаг 
+        difficultyLevel: 0,                 // уровень сложности
+        resultTable: {
+            playerName: null,               // имя игрока
+            score: null,                    // счёт
+        },
+        timer: {
+            counter: 60,                    // счетчик таймера
+            id: 0,                          // идентификатор таймера
+        },
+        cards: [],                          // массив карт на экране
+        backs: [],                          // массив обратных сторон карт
+        flippers: null,                     // массив флипперов карт
+        cardsContainer: null,               // объект div-контейнера для карт
+        openedCards: [],                    // открытые карты
+        cardsState: Array(12).fill(false),  // статус карты на поле
+    });
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            flags: {
-                firstClick: true,               // флаг начала игры
-                menuOpened: false,              // флаг открытия меню игры
-                settingsWindowOpened: false,    // флаг открытия меню выбора сложности
-                recordsTableOpened: false,      // флаг открытия таблицы рекордов
-                pause: false,                   // флаг паузы игры
-                win: false,                     // флаг победы в игре
-                lose: false,                    // флаг поражения в игре
-            },
-            DOMCreated: false,                  // флаг 
-            difficultyLevel: 0,                 // уровень сложности
-            resultTable: {
-                playerName: null,               // имя игрока
-                score: null,                    // счёт
-            },
-            timer: {
-                counter: 60,                    // счетчик таймера
-                id: 0,                          // идентификатор таймера
-            },
-            cards: [],                          // массив карт на экране
-            backs: [],                          // массив обратных сторон карт
-            flippers: null,                     // массив флипперов карт
-            cardsContainer: null,               // объект div-контейнера для карт
-            openedCards: [],                    // открытые карты
-            cardsState: Array(12).fill(false),  // статус карты на поле
-        };
-    }
-
-    endGame() {
+    const endGame = () => {
         let popupWindow = document.querySelector('.afterGame'),
             modalWindow = document.querySelector('.modalWindow'),
-            timer = {...this.state.timer};
+            timer = {...state.timer};
     
         modalWindow.classList.add('visible');
         popupWindow.classList.add('visible');
@@ -68,7 +64,7 @@ class MemojiReactApp extends Component {
 /*
     Функция вывода текста в конце игры
 */
-    gameEndingTextOunput(text) {
+    const gameEndingTextOunput = (text) => {
         let letters,
             letterSpan,
             deletingText = document.querySelectorAll('.popupText span'),
@@ -90,13 +86,13 @@ class MemojiReactApp extends Component {
         
     }
 
-    win() {
+    const win = () => {
         let win = 1,        
-            cards = this.state.cards.slice(0),
-            flags = {...this.state.flags},
+            cards = state.cards.slice(0),
+            flags = {...state.flags},
             i;
     
-            this.gameEndingTextOunput('W.i.n');
+            gameEndingTextOunput('W.i.n');
     
         for(i = 0; i < cards.length; i++)
         {
@@ -105,25 +101,26 @@ class MemojiReactApp extends Component {
         if(win)
         {
             flags.win = 1;
-            this.setState({
+            setState({
+                ...state,
                 flags: flags,
             });
-            this.endGame();
+            endGame();
         } 
     
     }
 
-    lose() {
-        this.gameEndingTextOunput('L.o.s.e');
+    const lose = () => {
+        gameEndingTextOunput('L.o.s.e');
         
-        this.endGame();
+        endGame();
     }
 
-    decrTimer() {
+    const decrTimer = () => {
         let timerWrapper = document.querySelector('.playground__timerWrapper'),
             minutes, seconds,
             minutesStr, secondsStr,     // Значения минут и секунд записанные строкой 
-            timer = {...this.state.timer};
+            timer = {...state.timer};
         timer.counter--;
         minutes = Math.floor(timer.counter / 60);
         minutesStr = minutes.toString();
@@ -136,20 +133,21 @@ class MemojiReactApp extends Component {
        if(!timer.counter)
        {
            clearInterval(timer.id);
-           this.lose();
+           lose();
        }
-       this.setState({
+       setState({
+           ...state,
            timer: timer,
        });
     }
 
-    playgroundClickHandler(event) {
+    const playgroundClickHandler = (event) => {
         let currentCard = null,
             currentFlipper = null,
-            flags = {...this.state.flags},
-            cards = this.state.cards.slice(0),
-            openedCards = this.state.openedCards.slice(0),
-            timer = {...this.state.timer},
+            flags = {...state.flags},
+            cards = state.cards.slice(0),
+            openedCards = state.openedCards.slice(0),
+            timer = {...state.timer},
             i;
         if(event.target.closest('.card__flipper'))
         {
@@ -158,7 +156,7 @@ class MemojiReactApp extends Component {
             {
                 flags.firstClick = false;
 
-                timer.id = window.setInterval(() => this.decrTimer(),1000);
+                timer.id = window.setInterval(() => decrTimer(),1000);
             }
     
             // сохранение индекса текущего элемента
@@ -181,32 +179,33 @@ class MemojiReactApp extends Component {
                 openedCards.splice(0,1);
             }
         }
-        if(openedCards.length > 1) this.compareCards(openedCards);
+        if(openedCards.length > 1) compareCards(openedCards);
 
-        this.setState({
+        setState({
+            ...state,
             flags: flags,
             openedCards: openedCards,
             timer: timer,
         })
     }
 
-    modalWindowClickHandler(event) {
+    const modalWindowClickHandler = (event) => {
         let modalWindow = document.querySelector(".modalWindow"),
             pauseWindow = document.querySelector(".pauseWindow"),
             settingsWindow = document.querySelector(".settingsWindow"),
             recordsWindow = document.querySelector(".recordsWindow"),
             nameField = document.querySelector('.userInfo__name'),
-            flags = {...this.state.flags},
-            timer = {...this.state.timer};
+            flags = {...state.flags},
+            timer = {...state.timer};
 
         if(event.target.closest('.pauseWindow .button')) {
             flags.pause = 0;
             modalWindow.classList.remove('visible');
             pauseWindow.classList.remove('visible');
-            timer.id = window.setInterval(() => this.decrTimer(),1000);
+            timer.id = window.setInterval(() => decrTimer(),1000);
 
         } else if(event.target.closest('.settingsWindow .button')) {
-            nameField.textContent = this.state.playerName;
+            nameField.textContent = state.playerName;
         } else if(!event.target.closest('.modalWindow__popupWindow')) {
             flags.settingsWindowOpened = 0;
             settingsWindow.classList.remove('visible');
@@ -218,23 +217,24 @@ class MemojiReactApp extends Component {
                 modalWindow.classList.remove('visible');
             }
         } 
-        this.setState({
+        setState({
+            ...state,
             flags: flags,
             timer: timer,
         });
     }
 
-    menuBlockClickHandler(event) {
+    const menuBlockClickHandler = (event) => {
         let menuList = document.querySelector(".menuBlock__list"),
             modalWindow = document.querySelector(".modalWindow"),
             pauseWindow = document.querySelector(".pauseWindow"),
             settingsWindow = document.querySelector(".settingsWindow"),
             recordsWindow = document.querySelector(".recordsWindow"),
-            timer = {...this.state.timer},
-            flags = {...this.state.flags};
-        if(this.state.flags.menuOpened) {
+            timer = {...state.timer},
+            flags = {...state.flags};
+        if(state.flags.menuOpened) {
             if(event.target.closest('#newGame')) {
-                this.toDefault();
+                toDefault();
                 clearInterval(timer.id);
         
             } else if (event.target.closest('#settings')) {
@@ -265,14 +265,15 @@ class MemojiReactApp extends Component {
                 } 
             }
         }
-        this.setState({
+        setState({
+            ...state,
             flags: flags,
         });
     }
 
-    compareCards(openedCards) {
+    const compareCards = (openedCards) => {
         let correct = 1,
-            cards = this.state.cards.slice(0),
+            cards = state.cards.slice(0),
             i;
         switch(openedCards.length)
         {
@@ -308,14 +309,14 @@ class MemojiReactApp extends Component {
         {
             if(!cards[i].back.classList.contains('correct')) correct = 0;
         }
-        if(correct) this.win();
+        if(correct) win();
             
     }
 
     /* 
         Функция перемешивает эмодзи в случайном порядке 
     */
-    mixEmojis() {
+    const mixEmojis = () => {
         let emojis = ['🐰', '🐰', '🐶', '🐶', '🐱', '🐱', '🐼', '🐼', '🐵', '🐵', '🐯','🐯'];
 
         emojis = emojis.sort(function(){
@@ -324,15 +325,15 @@ class MemojiReactApp extends Component {
         return emojis;
     }
 
-    putCardsOnTable() {
+    const putCardsOnTable = () => {
         let emojis,
             imgsArray = [],
             i,
-            backs = this.state.backs.slice(0),
-            cards = this.state.cards.slice(0),
-            flippers = this.state.flippers.slice(0);
+            backs = state.backs.slice(0) || [],
+            cards = state.cards?.slice(0) || [],
+            flippers = state.flippers.slice(0);
     
-        emojis = this.mixEmojis();
+        emojis = mixEmojis();
     
         for(i=0; i < emojis.length; i++)
         {
@@ -346,19 +347,20 @@ class MemojiReactApp extends Component {
             cards[i].setImageNode(imgsArray[i].textContent);
         }
     
-        this.setState({
+        setState({
+            ...state,
             backs: backs,
             cards: cards,
             DOMCreated: true,
         });
     }
 
-    putNewCards(cards) {
+    const putNewCards = (cards) => {
         let emojis,
             imgsArray = Array.from(document.querySelectorAll('.image_wrapper'));
             //cards = this.cards.slice(0);
     
-        emojis = this.mixEmojis();
+        emojis = mixEmojis();
         for(let i =0; i < emojis.length; i++)
         {
             cards[i].image = emojis[i];
@@ -367,12 +369,12 @@ class MemojiReactApp extends Component {
 
     }
 
-    toDefault() {
+    const toDefault = () => {
         let timerObj = document.querySelector('.playground__timerWrapper'),
-            cards = this.state.cards.slice(0),
-            openedCards = this.state.openedCards.slice(0),
-            flags = {...this.flags},
-            timer = {...this.timer},
+            cards = state.cards.slice(0),
+            openedCards = state.openedCards.slice(0),
+            flags = {...flags},
+            timer = {...timer},
             i;
     
         for(i = 0; i < cards.length; i++)
@@ -387,9 +389,9 @@ class MemojiReactApp extends Component {
         timerObj.textContent = '01:00';
         flags.lose = 0;
         flags.win = 0;
-        this.putNewCards(cards);
+        putNewCards(cards);
     
-        this.setState({
+        setState({
             cards: cards,
             openedCards: openedCards,
             flags: flags,
@@ -397,7 +399,7 @@ class MemojiReactApp extends Component {
         });
     }
 
-    onDifChangeHandler(event) {
+    const onDifChangeHandler = (event) => {
         let difficultyLvlInputs = Array.from(document.querySelectorAll('.difficultyLevel')),
             difficultyLevel,
             playerName,
@@ -410,50 +412,52 @@ class MemojiReactApp extends Component {
                 }
             }
 
-            this.setState({
+            setState({
+                ...state,
                 difficultyLevel: difficultyLevel,
             })
         } else if(event.target.closest('.settingsWindow')) {    
             playerName = event.target.value;
             
-            this.setState({
+            setState({
+                ...state,
                 playerName: playerName,
             });
         }
         
     }
 
-    componentDidMount() {
-        this.setState({
+    useEffect(() => {
+        setState({
             backs: Array.from(document.querySelectorAll('.card__wrapperBack')),
             flippers: Array.from(document.querySelectorAll('.card__flipper')),
             cardsContainer: document.querySelector('.playground__cardsContainer'),
         });
 
-    }
+    }, []);
 
-    componentDidUpdate() {
-        if(!this.state.DOMCreated) this.putCardsOnTable();
-    }
+    useEffect(() => {
+        if(state.flippers) putCardsOnTable();
+    }, [state.DOMCreated]);
 
-    render() {
-        return (
-            <div>
-                <ModalWindow 
-                    toDefault={this.toDefault.bind(this)}
-                    onChange={this.onDifChangeHandler.bind(this)}
-                    onClick = {(event) => this.modalWindowClickHandler(event)}
-                />
-                <MenuBlock 
-                    onClick = {(event) => this.menuBlockClickHandler(event)}
-                />
-                <Playground 
-                    onClick = {(event) => this.playgroundClickHandler(event)}
-                />
-                {/*<UserInfo playerName="User1" />*/}
-            </div>
-        );
-    }
+    
+    return (
+        <div>
+            <ModalWindow 
+                toDefault={toDefault}
+                onChange={onDifChangeHandler}
+                onClick = {(event) => modalWindowClickHandler(event)}
+            />
+            <MenuBlock 
+                onClick = {(event) => menuBlockClickHandler(event)}
+            />
+            <Playground 
+                onClick = {(event) => playgroundClickHandler(event)}
+            />
+            {/*<UserInfo playerName="User1" />*/}
+        </div>
+    );
 }
+
 
 export default MemojiReactApp;
