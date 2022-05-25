@@ -1,6 +1,7 @@
 
 const path = require("path");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const devMode = process.env.NODE_ENV !== "production";
 
 module.exports = {
     entry: path.resolve(__dirname, "./src/script.js"),
@@ -50,44 +51,36 @@ module.exports = {
                     loader: "babel-loader"
                 }
             },
-            {
-                test: /\.css$/,
-                use: [
-                    "style-loader",
-                    {
-                        loader: "css-loader",
-                        options: {
-                            modules: true
-                        }
-                    }
+            // {
+            //     test: /\.css$/,
+            //     use: [
+            //         "style-loader",
+            //         {
+            //             loader: "css-loader",
+            //             options: { 
+            //                 modules: {
+            //                     mode: "local",
+            //                     auto: true,
+            //                     exportGlobals: true,
+            //                     localIdentName: "[name]__[local]--[hash:base64:5]",
+            //                 } 
+            //             }
+            //         }
 
-                ]
-            },
+            //     ]
+            // },
             {
-                test: /\.s[ac]ss$/i,
-                sideEffects: true,
-                use: [ 
-                    process.env.NODE_ENV !== 'production' ? 'style-loader' : MiniCssExtractPlugin.loader,
-                    'css-loader', 
-                    /*{
-                        loader: 'postcss-loader',
-                        options: {
-                            plugins: [
-                                autoprefixer({
-                                    browsers:['ie >= 8', 'last 4 version']
-                                })
-                            ],
-                            sourceMap: true
-                        }
-                    },*/
-                    'resolve-url-loader',
-                    {
-                        loader: 'sass-loader',
-                        options: {
-                            implementation: require('sass'),
-                        }
-                    },
-                ]   
+                test: /\.s[sc]ss$/i,
+                use: [
+                  { loader: devMode ? "style-loader" : MiniCssExtractPlugin.loader },
+                  { loader: "css-loader", options: { modules: {
+                    mode: "local",
+                    auto: true,
+                    exportGlobals: true,
+                    localIdentName: "[name]__[local]",
+                  } } },
+                  { loader: "sass-loader" }
+                ]
             },
             {
                 test: /\.(png|svg|jpg|gif|)$/,

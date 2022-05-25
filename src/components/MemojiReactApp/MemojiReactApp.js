@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext, useReducer } from 'react';
 import Playground from '../playground/playground';
 import MenuBlock from '../menuBlock/menuBlock';
 import ModalWindow from '../modalWindow/modalWindow';
 import UserInfo from '../userInfo/userInfo';
+import { AppContext, appInitialState } from '../../services/context';
+import reducer from '../../services/reducer';
+import { saveOpenedCards } from '../../services/actions';
 
 
 class Card {
@@ -22,6 +25,7 @@ class Card {
 }
 
 const MemojiReactApp = () => {
+  const [appState, dispatch] = useReducer(reducer, appInitialState);
     const [state, setState] = useState({
         flags: {
             firstClick: true,               // флаг начала игры
@@ -68,10 +72,9 @@ const MemojiReactApp = () => {
         let letters,
             letterSpan,
             deletingText = document.querySelectorAll('.popupText span'),
-            popupText = document.querySelector(".popupText"),
-            i;
+            popupText = document.querySelector(".popupText");
     
-        for(i = 0; i < deletingText.length; i++) {
+        for(let i = 0; i < deletingText.length; i++) {
             popupText.removeChild(deletingText[i]);
         }
     
@@ -144,25 +147,24 @@ const MemojiReactApp = () => {
     const playgroundClickHandler = (event) => {
         let currentCard = null,
             currentFlipper = null,
-            flags = {...state.flags},
-            cards = [...state.cards],
-            openedCards = state.openedCards?.length ? [...state.openedCards] : [],
-            timer = {...state.timer},
+            flags = {...appState.flags},
+            cards = [...appState.cards],
+            // flippers = appState.flippers,
+            openedCards = appState.openedCards?.length ? [...appState.openedCards] : [],
+            timer = {...appState.timer},
             i;
 
         currentFlipper = event.currentTarget;
-        if(flags.firstClick)
-        {
-            flags.firstClick = false;
+        // if(flags.firstClick)
+        // {
+        //     flags.firstClick = false;
 
-            timer.id = window.setInterval(() => decrTimer(),1000);
-        }
+        //     timer.id = window.setInterval(() => decrTimer(),1000);
+        // }
 
         // сохранение индекса текущего элемента
-        for(i = 0; i < cards.length;  i++)
-        {
-            if(cards[i].flipper === currentFlipper)
-            {
+        for(i = 0; i < cards.length;  i++) {
+            if (cards[i].flipper === currentFlipper) {
                 currentCard = cards[i];
             }
         }
@@ -175,17 +177,19 @@ const MemojiReactApp = () => {
         else if(!(currentCard.back.classList.contains('correct') || currentCard.back.classList.contains('incorrect')))
         {
             currentCard.flipper.classList.remove('rotate');
-            openedCards.splice(0,1);
+            openedCards.splice(0, 1);
             }
         
         if(openedCards.length > 1) compareCards(openedCards);
 
-        setState({
-            ...state,
-            flags: flags,
-            openedCards: openedCards,
-            timer: timer,
-        })
+        dispatch(saveOpenedCards(openedCards));
+
+        // setState({
+        //     ...state,
+        //     flags: flags,
+        //     openedCards: openedCards,
+        //     timer: timer,
+        // })
     }
 
     const modalWindowClickHandler = (event) => {
@@ -271,27 +275,24 @@ const MemojiReactApp = () => {
     }
 
     const compareCards = (openedCards) => {
-        let correct = 1,
-            cards = state.cards.slice(0),
-            i;
+        let correct = true,
+            cards = [...appState.cards];
+
         switch(openedCards.length)
         {
             case 2:
-                if(openedCards[0].image === openedCards[1].image)
-                {
+                if(openedCards[0].image === openedCards[1].image) {
                     openedCards[0].back.classList.add('correct');
                     openedCards[1].back.classList.add('correct');
-                }
-                else
-                {
+                } else {
                     openedCards[0].back.classList.add('incorrect');
                     openedCards[1].back.classList.add('incorrect');
                 }
             break;
             case 3:
                 //перевернуть карточки и сбросить цвет задника, если они угаданы неверно
-                if(!(openedCards[0].back.classList.contains('correct') && openedCards[1].back.classList.contains('correct')))
-                {
+                if(!(openedCards[0].back.classList.contains('correct') && 
+                    openedCards[1].back.classList.contains('correct'))) {
                     openedCards[0].flipper.classList.remove('rotate');
                     openedCards[1].flipper.classList.remove('rotate'); 
                     openedCards[0].back.classList.remove('incorrect');
@@ -304,12 +305,11 @@ const MemojiReactApp = () => {
             break;
         }
     
-        for(i = 0; i < cards.length; i++)
-        {
-            if(!cards[i].back.classList.contains('correct')) correct = 0;
+        for(let i = 0; i < cards.length; i++) {
+            if(!cards[i].back.classList.contains('correct')) correct = false;
         }
-        if(correct) win();
-            
+
+        if(correct) win();            
     }
 
     /* 
@@ -327,33 +327,32 @@ const MemojiReactApp = () => {
     const putCardsOnTable = () => {
         let emojis,
             imgsArray = [],
-            i,
-            backs = state.backs.slice(0) || [],
-            cards = state.cards?.slice(0) || [],
-            flippers = state.flippers.slice(0);
+            // backs = [...appState.backs] || [],
+            cards = appState.cards?.slice(0) || [];
+            // flippers = [...appState.flippers];
     
         emojis = mixEmojis();
         
-        if (cards.length) return;
+        // if (cards.length) cards = [];
 
-        for(i=0; i < emojis.length; i++)
-        {
-            imgsArray.push(document.createElement('div'));
-            imgsArray[i].textContent = emojis[i];
-            imgsArray[i].className = 'image_wrapper';
-            backs[i].appendChild(imgsArray[i]);
-            cards.push(new Card(i));
-            cards[i].setFlipperNode(flippers[i]);
-            cards[i].setBackNode(backs[i]);
-            cards[i].setImageNode(imgsArray[i].textContent);
-        }
+        // for(let i = 0; i < emojis.length; i++)
+        // {
+        //     imgsArray.push(document.createElement('div'));
+        //     imgsArray[i].textContent = emojis[i];
+        //     imgsArray[i].className = 'image_wrapper';
+        //     // backs[i].appendChild(imgsArray[i]);
+        //     cards.push(new Card(i));
+        //     cards[i].setFlipperNode(flippers[i]);
+        //     cards[i].setBackNode(backs[i]);
+        //     cards[i].setImageNode(imgsArray[i].textContent);
+        // }
     
-        setState({
-            ...state,
-            backs: backs,
-            cards: cards,
-            DOMCreated: true,
-        });
+        // setState({
+        //     ...state,
+        //     backs: backs,
+        //     cards: cards,
+        //     DOMCreated: true,
+        // });
     }
 
     const putNewCards = (cards) => {
@@ -441,23 +440,25 @@ const MemojiReactApp = () => {
         if(state.flippers) putCardsOnTable();
     }, [state.DOMCreated]);
 
-    
-    return (
-        <div>
-            <ModalWindow 
-                toDefault={toDefault}
-                onChange={onDifChangeHandler}
-                onClick = {(event) => modalWindowClickHandler(event)}
-            />
-            <MenuBlock 
-                onClick = {(event) => menuBlockClickHandler(event)}
-            />
-            <Playground 
-                onClick = {(event) => playgroundClickHandler(event)}
-            />
-            {/*<UserInfo playerName="User1" />*/}
-        </div>
-    );
+  
+  
+  return (
+    <AppContext.Provider value={appState}>
+        {/* <ModalWindow 
+          toDefault={toDefault}
+          onChange={onDifChangeHandler}
+          onClick = {(event) => modalWindowClickHandler(event)}
+        /> */}
+        <MenuBlock 
+          onClick = {(event) => menuBlockClickHandler(event)}
+        />
+        <Playground 
+          dispatch={dispatch}
+          onClick = {(event) => playgroundClickHandler(event)}
+        />
+        {/*<UserInfo playerName="User1" />*/}
+    </AppContext.Provider>
+  );
 }
 
 

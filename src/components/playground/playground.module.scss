@@ -1,0 +1,19 @@
+@import "./__cardsContainer/__cardsContainer";
+@import "./__timerWrapper/__timerWrapper";
+
+.playground {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+}
+
+.cardsContainer {
+    display: flex;
+    max-width: 595px;
+    margin: 0 auto;
+    flex-flow: row wrap;
+    align-content: flex-start;
+    justify-content: space-between;
+    
+}
+
