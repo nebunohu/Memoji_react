@@ -129,11 +129,11 @@ const MemojiReactApp = () => {
     timer.counter--;
     minutes = Math.floor(timer.counter / 60);
     minutesStr = minutes.toString();
-    if(minutes < 10) minutesStr = '0'+ minutesStr;
+    if (minutes < 10) minutesStr = '0' + minutesStr;
     seconds = timer.counter % 60;
     secondsStr =seconds.toString();
-    if(seconds < 10) secondsStr = '0'+ secondsStr;
-    timerWrapper.textContent = minutesStr+':'+secondsStr;
+    if (seconds < 10) secondsStr = '0' + secondsStr;
+    timerWrapper.textContent = minutesStr + ':' + secondsStr;
 
     if (!timer.counter) {
       clearInterval(timer.id);
