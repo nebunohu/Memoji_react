@@ -44,7 +44,7 @@ const MemojiReactApp = () => {
             win: false,                     // флаг победы в игре
             lose: false,                    // флаг поражения в игре
         },
-        DOMCreated: false,                  // флаг 
+        // DOMCreated: false,                  // флаг 
         difficultyLevel: 0,                 // уровень сложности
         resultTable: {
             playerName: null,               // имя игрока
@@ -54,9 +54,9 @@ const MemojiReactApp = () => {
         //     counter: 60,                    // счетчик таймера
         //     id: 0,                          // идентификатор таймера
         // },
-        cards: [],                          // массив карт на экране
-        backs: [],                          // массив обратных сторон карт
-        flippers: null,                     // массив флипперов карт
+        // cards: [],                          // массив карт на экране
+        // backs: [],                          // массив обратных сторон карт
+        // flippers: null,                     // массив флипперов карт
         cardsContainer: null,               // объект div-контейнера для карт
         openedCards: [],                    // открытые карты
         cardsState: Array(12).fill(false),  // статус карты на поле
@@ -70,7 +70,6 @@ const MemojiReactApp = () => {
         modalWindow.classList.add('visible');
         popupWindow.classList.add('visible');
         clearInterval(timer.id);
-        
     }
 
 /*
@@ -97,44 +96,37 @@ const MemojiReactApp = () => {
   }
 
     const win = () => {
-        let win = 1,        
-            cards = state.cards.slice(0),
-            flags = {...state.flags},
-            i;
+        let win = true,        
+          cards = state.cards.slice(0),
+          flags = {...appState.flags};
+  
+          gameEndingTextOunput('W.i.n');
     
-            gameEndingTextOunput('W.i.n');
-    
-        for(i = 0; i < cards.length; i++)
-        {
-            if(!cards[i].back.classList.contains('correct')) win = 0;
+        for (let i = 0; i < cards.length; i++) {
+          if (!cards[i].back.classList.contains('correct')) win = false;
         }
-        if(win)
-        {
-            flags.win = 1;
-            setState({
-                ...state,
-                flags: flags,
-            });
-            endGame();
+        if (win) {
+          flags.win = true;
+          setState({
+              ...state,
+              flags: flags,
+          });
+          endGame();
         } 
-    
     }
 
-    const lose = () => {
-        gameEndingTextOunput('L.o.s.e');
-        
-        endGame();
-    }
+  const lose = () => {
+    gameEndingTextOunput('L.o.s.e');
+    
+    endGame();
+  }
 
   const decrTimer = () => {
     let timerWrapper = document.querySelector('.playground__timerWrapper'),
       minutes, seconds,
       minutesStr, secondsStr;     // Значения минут и секунд записанные строкой 
       
-      //]]timer = {...appState.timer};
-    // const { timer } = useContext(AppContext);
     timer.counter--;
-    // timer.counter = 50 - 1;
     minutes = Math.floor(timer.counter / 60);
     minutesStr = minutes.toString();
     if(minutes < 10) minutesStr = '0'+ minutesStr;
@@ -143,15 +135,10 @@ const MemojiReactApp = () => {
     if(seconds < 10) secondsStr = '0'+ secondsStr;
     timerWrapper.textContent = minutesStr+':'+secondsStr;
 
-    if(!timer.counter)
-    {
-        clearInterval(timer.id);
-        lose();
+    if (!timer.counter) {
+      clearInterval(timer.id);
+      lose();
     }
-    //  setState({
-    //      ...state,
-    //      timer: timer,
-    //  });
     dispatch(setTimer(timer));
   }
 
