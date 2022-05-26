@@ -33,6 +33,7 @@ import setCurrentCard from '../../utils/set-current-card';
 
 const MemojiReactApp = () => {
   const [appState, dispatch] = useReducer(reducer, appInitialState);
+  const { cards, openedCards, flags, timer } = useContext(AppContext);
     const [state, setState] = useState({
         flags: {
             firstClick: true,               // флаг начала игры
@@ -49,10 +50,10 @@ const MemojiReactApp = () => {
             playerName: null,               // имя игрока
             score: null,                    // счёт
         },
-        timer: {
-            counter: 60,                    // счетчик таймера
-            id: 0,                          // идентификатор таймера
-        },
+        // timer: {
+        //     counter: 60,                    // счетчик таймера
+        //     id: 0,                          // идентификатор таймера
+        // },
         cards: [],                          // массив карт на экране
         backs: [],                          // массив обратных сторон карт
         flippers: null,                     // массив флипперов карт
@@ -75,26 +76,25 @@ const MemojiReactApp = () => {
 /*
     Функция вывода текста в конце игры
 */
-    const gameEndingTextOunput = (text) => {
-        let letters,
-            letterSpan,
-            deletingText = document.querySelectorAll('.popupText span'),
-            popupText = document.querySelector(".popupText");
-    
-        for(let i = 0; i < deletingText.length; i++) {
-            popupText.removeChild(deletingText[i]);
-        }
-    
-        letters = text.split('.');
-    
-        for(i = 0; i < letters.length; i++) {
-            letterSpan = document.createElement('span')
-            letterSpan.textContent = letters[i];
-            letterSpan.classList.add('letter'+(i+1));
-            popupText.appendChild(letterSpan);
-        }
-        
+  const gameEndingTextOunput = (text) => {
+    let letters,
+        letterSpan,
+        deletingText = document.querySelectorAll('.popupText span'),
+        popupText = document.querySelector(".popupText");
+  
+    for (let i = 0; i < deletingText.length; i++) {
+      popupText.removeChild(deletingText[i]);
     }
+
+    letters = text.split('.');
+
+    for (let i = 0; i < letters.length; i++) {
+      letterSpan = document.createElement('span')
+      letterSpan.textContent = letters[i];
+      letterSpan.classList.add('letter' + (i + 1));
+      popupText.appendChild(letterSpan);
+    } 
+  }
 
     const win = () => {
         let win = 1,        
@@ -128,10 +128,13 @@ const MemojiReactApp = () => {
 
   const decrTimer = () => {
     let timerWrapper = document.querySelector('.playground__timerWrapper'),
-        minutes, seconds,
-        minutesStr, secondsStr,     // Значения минут и секунд записанные строкой 
-        timer = {...appState.timer};
+      minutes, seconds,
+      minutesStr, secondsStr;     // Значения минут и секунд записанные строкой 
+      
+      //]]timer = {...appState.timer};
+    // const { timer } = useContext(AppContext);
     timer.counter--;
+    // timer.counter = 50 - 1;
     minutes = Math.floor(timer.counter / 60);
     minutesStr = minutes.toString();
     if(minutes < 10) minutesStr = '0'+ minutesStr;
@@ -153,32 +156,27 @@ const MemojiReactApp = () => {
   }
 
   const playgroundClickHandler = (event) => {
-      let flags = {...appState.flags},
-          cards = [...appState.cards],
-          openedCards = appState.openedCards?.length ? [...appState.openedCards] : [],
-          timer = {...appState.timer};
+    let flags = {...appState.flags},
+      cards = [...appState.cards],
+      openedCards = appState.openedCards?.length ? [...appState.openedCards] : [],
+      timer = {...appState.timer};
 
-      const currentFlipper = event.currentTarget;
-      if(flags.firstClick)
-      {
-        dispatch(setFirstClick());
-        timer.id = window.setInterval(() => decrTimer(), 1000);
-        dispatch(setTimer(timer));
-      }
+    const currentFlipper = event.currentTarget;
 
-      // сохранение индекса текущего элемента
-      const currentCard = setCurrentCard(cards, currentFlipper);
-      // переворот карточки
-      rotateCard(currentCard, openedCards);
-      
-      if(openedCards.length > 1) compareCards(openedCards, cards);
+    if (flags.firstClick) {
+      dispatch(setFirstClick());
+      timer.id = window.setInterval(() => decrTimer(), 1000);
+      dispatch(setTimer(timer));
+    }
 
-      dispatch(saveOpenedCards(openedCards));
+    // сохранение текущего элемента
+    const currentCard = setCurrentCard(cards, currentFlipper);
+    // переворот карточки
+    rotateCard(currentCard, openedCards);
+    
+    if (openedCards.length > 1) compareCards(openedCards, cards);
 
-      // setState({
-      //     ...state,
-      //     timer: timer,
-      // })
+    dispatch(saveOpenedCards(openedCards));
   }
 
     const modalWindowClickHandler = (event) => {
