@@ -35,14 +35,14 @@ main {
     color:#434344;
 }
 
-#root > div {
-    display: flex;
-    flex-flow: row wrap;
-    justify-content: center;
-    align-items: flex-start;
-    font: bold 48px Arial, Helvetica, sans-serif;
-    color:#434344;
-}
+// #root > div {
+//     display: flex;
+//     flex-flow: row wrap;
+//     justify-content: center;
+//     align-items: flex-start;
+//     font: bold 48px Arial, Helvetica, sans-serif;
+//     color:#434344;
+// }
 
 /*ul {
     padding: 0;
@@ -104,12 +104,12 @@ li {
 
 
 .correct {
-    background-color: #5ad66f;
+    background-color: #5ad66f !important;
     cursor: default;
 }
 
 .incorrect{
-    background-color: #f44336;
+    background-color: #f44336 !important;
     cursor: default;
 }
 

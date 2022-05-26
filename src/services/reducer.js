@@ -1,4 +1,4 @@
-import { ADD_CARD, SAVE_OPENED_CARDS } from "./actions";
+import { ADD_CARD, SAVE_OPENED_CARDS, SET_FIRST_CLICK, SET_TIMER } from "./actions";
 import { appInitialState } from "./context"
 
 const reducer = (state = appInitialState, action) => {
@@ -22,6 +22,20 @@ const reducer = (state = appInitialState, action) => {
       return {
         ...state,
         openedCards: action.openedCards,
+      };
+    }
+    case SET_FIRST_CLICK: {
+      return {
+        ...state,
+        flags: {
+          firstClick: false,
+        },
+      };
+    }
+    case SET_TIMER: {
+      return {
+        ...state,
+        timer: action.timer,
       };
     }
     default: {

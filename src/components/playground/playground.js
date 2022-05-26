@@ -29,7 +29,7 @@ const Playground = ({ onClick, dispatch }) => {
     }
 
     return (
-        <div className='playground'>
+        <div className={`${styles.playground}`}>
             <div className={`${styles.cardsContainer}`}>
                 {cards.map((item, index) => {
                     return (
