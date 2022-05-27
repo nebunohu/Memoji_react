@@ -21,7 +21,8 @@ import EndgamePopup from '../endgame-popup/endgame-popup';
 const MemojiReactApp = () => {
   const [endgameText, setEndgameText] = useState(null);
   const [appState, dispatch] = useReducer(reducer, appInitialState);
-  const { timer, flags } = appState;
+  const { timer } = useContext(AppContext);
+  const { flags } = appState;
 
   const endGame = () => {
     dispatch(openModal());
@@ -75,7 +76,7 @@ const MemojiReactApp = () => {
     timerWrapper.textContent = outputTimeString(timer.counter);
 
     if (!timer.counter) {
-      clearInterval(timer.id);
+      // clearInterval(timer.id);
       lose();
     }
     dispatch(decrementTimer(timer.counter));
@@ -84,8 +85,8 @@ const MemojiReactApp = () => {
   const playgroundClickHandler = (event) => {
     let flags = {...appState.flags},
       cards = [...appState.cards],
-      openedCards = appState.openedCards?.length ? [...appState.openedCards] : [],
-      timer = {...appState.timer};
+      openedCards = appState.openedCards?.length ? [...appState.openedCards] : [];
+      // timer = {...appState.timer};
 
     const currentFlipper = event.currentTarget;
 
