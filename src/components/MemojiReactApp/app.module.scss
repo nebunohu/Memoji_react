@@ -41,8 +41,3 @@
       transform: translateY(-10px) scaleY(1.2);
   }
 }
-
-
-/*.card:hover .flipper,*/ .card.hover .flipper, .card .rotate {
-  transform: rotateY(180deg);
-}
