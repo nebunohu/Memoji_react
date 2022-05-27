@@ -5,7 +5,7 @@ import ModalWindow from '../modalWindow/modalWindow';
 import UserInfo from '../userInfo/userInfo';
 import { AppContext, appInitialState } from '../../services/context';
 import reducer from '../../services/reducer';
-import { decrementTimer, openModal, closeModal, OPEN_MODAL, saveOpenedCards, setFirstClick, setFlags, setTimer } from '../../services/actions';
+import { decrementTimer, openModal, closeModal, saveOpenedCards, setFirstClick, setFlags, setTimer } from '../../services/actions';
 
 // Styles
 import styles from './app.module.scss';
@@ -33,17 +33,25 @@ const MemojiReactApp = () => {
     Функция вывода текста в конце игры
 */
   const gameEndingTextOunput = (text) => {
-    let letters,
-        letterSpan;
-
+    const letters = text.split('.');
     const nodes = [];
-    letters = text.split('.');
 
     for (let i = 0; i < letters.length; i++) {
-      letterSpan = React.createElement('span', {key: `letter${i}`}, letters[i]);
-      nodes.push(letterSpan);
+      nodes.push(React.createElement(
+        'span',
+        {
+          key: `letter${i}`,
+          className: `${styles[`letter${i + 1}`]}`
+        },
+        letters[i]
+      ));
     }
-    const popupText = React.createElement('div', null, nodes);
+    const popupText = React.createElement(
+      'div', 
+      {
+        className: `${styles.popupText}`
+      }, 
+      nodes);
     setEndgameText(popupText);
   }
 
@@ -81,101 +89,6 @@ const MemojiReactApp = () => {
     }
     dispatch(decrementTimer(timer.counter));
   };
-
-  const playgroundClickHandler = (event) => {
-    let flags = {...appState.flags},
-      cards = [...appState.cards],
-      openedCards = appState.openedCards?.length ? [...appState.openedCards] : [];
-      // timer = {...appState.timer};
-
-    const currentFlipper = event.currentTarget;
-
-    if (flags.firstClick) {
-      dispatch(setFirstClick());
-      timer.id = window.setInterval(() => decrTimer(), 1000);
-      dispatch(setTimer(timer));
-    }
-
-    // сохранение текущего элемента
-    const currentCard = setCurrentCard(cards, currentFlipper);
-    // переворот карточки
-    rotateCard(currentCard, openedCards);
-    
-    if (openedCards.length > 1) {
-      const correct = compareCards(openedCards, cards);
-      if(correct) win(); 
-    }
-
-    dispatch(saveOpenedCards(openedCards));
-  }
-
-  const modalWindowClickHandler = (event) => {
-    let modalWindow = document.querySelector(".modalWindow"),
-        pauseWindow = document.querySelector(".pauseWindow"),
-        settingsWindow = document.querySelector(".settingsWindow"),
-        recordsWindow = document.querySelector(".recordsWindow"),
-        nameField = document.querySelector('.userInfo__name'),
-        flags = {...appState.flags};
-
-    if (event.target.closest('.pauseWindow .button')) {
-        dispatch(setFlags({ ...flags, isModalOpen: false, pause: false }));
-        timer.id = window.setInterval(() => decrTimer(), 1000);
-        dispatch(setTimer(timer));
-
-    } else if (event.target.closest('.settingsWindow .button')) {
-        nameField.textContent = state.playerName;
-    } else if (!event.target.closest('.modalWindow__popupWindow')) {
-        flags.settingsWindowOpened = 0;
-        settingsWindow.classList.remove('visible');
-
-        flags.recordsTableWindowOpened = 0;
-        recordsWindow.classList.remove('visible');
-
-        if (!flags.pause) {
-            modalWindow.classList.remove('visible');
-        }
-    }
-  }
-
-  const menuBlockClickHandler = (event) => {
-    let menuList = document.querySelector(".menuBlock__list"),
-        modalWindow = document.querySelector(".modalWindow"),
-        pauseWindow = document.querySelector(".pauseWindow"),
-        settingsWindow = document.querySelector(".settingsWindow"),
-        recordsWindow = document.querySelector(".recordsWindow");
-    if (flags.menuOpened) {
-      if (event.target.closest('#newGame')) {
-        toDefault();
-        clearInterval(timer.id);
-  
-      } else if (event.target.closest('#settings')) {
-        flags.settingsWindowOpened = 1;
-        modalWindow.classList.add('visible');
-        settingsWindow.classList.add('visible');
-
-      } else if (event.target.closest('#recordsTable')) {
-        flags.recordsTableOpened = 1;
-        modalWindow.classList.add('visible');
-        recordsWindow.classList.add('visible');
-      } 
-
-      flags.menuOpened = 0;
-      menuList.classList.remove('visible');
-    } else {
-      if (event.target.closest('.menuBlock')) {
-        if(event.target.closest('.menuBlock__pauseButton')) {
-          flags.pause = 1;
-          dispatch(openModal());
-          clearInterval(timer.id);
-
-        } else if (event.target.closest('.menuBlock__burgerButton')) {
-          flags.menuOpened = 1;
-          menuList.classList.add('visible');
-
-        } 
-      }
-    }
-  }
 
     /* 
         Функция перемешивает эмодзи в случайном порядке 
@@ -258,6 +171,101 @@ const MemojiReactApp = () => {
   //     }
       
   // }
+
+  const playgroundClickHandler = (event) => {
+    let flags = {...appState.flags},
+      cards = [...appState.cards],
+      openedCards = appState.openedCards?.length ? [...appState.openedCards] : [];
+      // timer = {...appState.timer};
+
+    const currentFlipper = event.currentTarget;
+
+    if (flags.firstClick) {
+      dispatch(setFirstClick());
+      timer.id = window.setInterval(() => decrTimer(), 1000);
+      dispatch(setTimer(timer));
+    }
+
+    // сохранение текущего элемента
+    const currentCard = setCurrentCard(cards, currentFlipper);
+    // переворот карточки
+    rotateCard(currentCard, openedCards);
+    
+    if (openedCards.length > 1) {
+      const correct = compareCards(openedCards, cards);
+      if(correct) win(); 
+    }
+
+    dispatch(saveOpenedCards(openedCards));
+  }
+
+  const menuBlockClickHandler = (event) => {
+    let menuList = document.querySelector(".menuBlock__list"),
+        modalWindow = document.querySelector(".modalWindow"),
+        pauseWindow = document.querySelector(".pauseWindow"),
+        settingsWindow = document.querySelector(".settingsWindow"),
+        recordsWindow = document.querySelector(".recordsWindow");
+    if (flags.menuOpened) {
+      if (event.target.closest('#newGame')) {
+        toDefault();
+        clearInterval(timer.id);
+  
+      } else if (event.target.closest('#settings')) {
+        flags.settingsWindowOpened = 1;
+        modalWindow.classList.add('visible');
+        settingsWindow.classList.add('visible');
+
+      } else if (event.target.closest('#recordsTable')) {
+        flags.recordsTableOpened = 1;
+        modalWindow.classList.add('visible');
+        recordsWindow.classList.add('visible');
+      } 
+
+      flags.menuOpened = 0;
+      menuList.classList.remove('visible');
+    } else {
+      if (event.target.closest('.menuBlock')) {
+        if(event.target.closest('.menuBlock__pauseButton')) {
+          flags.pause = 1;
+          dispatch(openModal());
+          clearInterval(timer.id);
+
+        } else if (event.target.closest('.menuBlock__burgerButton')) {
+          flags.menuOpened = 1;
+          menuList.classList.add('visible');
+
+        } 
+      }
+    }
+  }
+
+  const modalWindowClickHandler = (event) => {
+    let modalWindow = document.querySelector(".modalWindow"),
+        pauseWindow = document.querySelector(".pauseWindow"),
+        settingsWindow = document.querySelector(".settingsWindow"),
+        recordsWindow = document.querySelector(".recordsWindow"),
+        nameField = document.querySelector('.userInfo__name'),
+        flags = {...appState.flags};
+
+    if (event.target.closest('.pauseWindow .button')) {
+        dispatch(setFlags({ ...flags, isModalOpen: false, pause: false }));
+        timer.id = window.setInterval(() => decrTimer(), 1000);
+        dispatch(setTimer(timer));
+
+    } else if (event.target.closest('.settingsWindow .button')) {
+        nameField.textContent = state.playerName;
+    } else if (!event.target.closest('.modalWindow__popupWindow')) {
+        flags.settingsWindowOpened = 0;
+        settingsWindow.classList.remove('visible');
+
+        flags.recordsTableWindowOpened = 0;
+        recordsWindow.classList.remove('visible');
+
+        if (!flags.pause) {
+            modalWindow.classList.remove('visible');
+        }
+    }
+  }
 
   const onModalOverlayClick = (e, overlay) => {
     if (e.target === overlay) {

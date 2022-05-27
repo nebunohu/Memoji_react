@@ -18,7 +18,7 @@ export const appInitialState = {
     score: null,                    // счёт
   },
   timer: {
-    counter: 60,                    // счетчик таймера
+    counter: 5,                    // счетчик таймера
     id: null,                          // идентификатор таймера
   },
   cards: [
