@@ -5,7 +5,7 @@ import ModalWindow from '../modalWindow/modalWindow';
 import UserInfo from '../userInfo/userInfo';
 import { AppContext, appInitialState } from '../../services/context';
 import reducer from '../../services/reducer';
-import { decrementTimer, openModal, closeModal, saveOpenedCards, setFirstClick, setFlags, setTimer } from '../../services/actions';
+import { decrementTimer, openModal, closeModal, saveOpenedCards, setFirstClick, setFlags, setTimer, setStateToDefault } from '../../services/actions';
 
 // Styles
 import styles from './app.module.scss';
@@ -117,32 +117,25 @@ const MemojiReactApp = () => {
   }
 
   const toDefault = () => {
-    let timerObj = document.querySelector('.playground__timerWrapper'),
-      cards = state.cards.slice(0),
-      openedCards = state.openedCards.slice(0),
-      flags = {...flags},
-      timer = {...timer};
+    let cards = [...appState.cards];
 
     for(let i = 0; i < cards.length; i++) {
       cards[i].flipper.classList.remove('rotate');
       cards[i].back.classList.remove('correct'); 
       cards[i].back.classList.remove('incorrect');
     }
-    openedCards.splice(0, openedCards.length);
-    flags.firstClick = 1;
-    timer.counter = 60;
-    timerObj.textContent = '01:00';
-    flags.lose = 0;
-    flags.win = 0;
-    putNewCards(cards);
+    
+    dispatch(setStateToDefault());
+    // putNewCards(cards);
 
-    setState({
-        cards: cards,
-        openedCards: openedCards,
-        flags: flags,
-        timer: timer,
-    });
-  }
+    
+    // setState({
+    //     cards: cards,
+    //     openedCards: openedCards,
+    //     flags: flags,
+    //     timer: timer,
+    // });
+  };
 
   // const onDifChangeHandler = (event) => {
   //     let difficultyLvlInputs = Array.from(document.querySelectorAll('.difficultyLevel')),
@@ -241,7 +234,6 @@ const MemojiReactApp = () => {
 
   const modalWindowClickHandler = (event) => {
     let modalWindow = document.querySelector(".modalWindow"),
-        pauseWindow = document.querySelector(".pauseWindow"),
         settingsWindow = document.querySelector(".settingsWindow"),
         recordsWindow = document.querySelector(".recordsWindow"),
         nameField = document.querySelector('.userInfo__name'),
@@ -283,6 +275,11 @@ const MemojiReactApp = () => {
       dispatch(closeModal());
     }
   };
+
+  const endgameClickHandler = () => {
+    toDefault();
+    dispatch(setFlags({ ...flags, isModalOpen: false, lose: false, win: false }));
+  };
   
   return (
     <AppContext.Provider value={appState}>
@@ -308,7 +305,7 @@ const MemojiReactApp = () => {
         flags.isModalOpen && (flags.win || flags.lose) && <ModalWindow
           overlayClick={onModalOverlayClick}
         >
-          <EndgamePopup onClick={modalWindowClickHandler}>
+          <EndgamePopup onClick={endgameClickHandler}>
             <div>{endgameText}</div>
           </EndgamePopup>
         </ModalWindow>

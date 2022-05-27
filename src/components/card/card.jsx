@@ -9,6 +9,9 @@ import styles from './card.module.scss';
 const Card = ({ id, onClick, emoji, dispatch }) => {
   const flipperRef = useRef(null);
   const backRef = useRef(null);
+  const { cards } = useContext(AppContext);
+  const numRegExp = /\d+/;
+  const cardNumId = parseInt(id.match(numRegExp)[0]);
 
   useEffect(() => {
 
@@ -16,7 +19,9 @@ const Card = ({ id, onClick, emoji, dispatch }) => {
       flipper: flipperRef.current,
       back: backRef.current
     }));
-  }, []);
+  }, [cards[cardNumId]]);
+
+
 
   return (
     <div className="card playground__card" id={id}>

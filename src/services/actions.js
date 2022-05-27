@@ -6,6 +6,7 @@ export const DECREMENT_TIMER = 'DECREMENT_TIMER';
 export const OPEN_MODAL = 'OPEN_MODAL';
 export const CLOSE_MODAL = 'CLOSE_MODAL';
 export const SET_FLAGS = 'SET_FLAGS';
+export const SET_STATE_TO_DEFAULT = 'SET_STATE_TO_DEFAULT';
 
 export const addCard = (card) => {
   return {
@@ -57,5 +58,11 @@ export const setFlags = (flags) => {
   return {
     type: SET_FLAGS,
     flags
+  };
+};
+
+export const setStateToDefault = () => {
+  return {
+    type: SET_STATE_TO_DEFAULT,
   };
 };
