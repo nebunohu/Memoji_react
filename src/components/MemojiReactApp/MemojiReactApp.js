@@ -18,22 +18,6 @@ import outputTimeString from '../../utils/output-time-string';
 import PausePopup from '../pause-popup/pause-popup';
 import EndgamePopup from '../endgame-popup/endgame-popup';
 
-// class Card {
-// 	constructor(id) {
-// 		this.id = id;
-//     }
-//     setFlipperNode(flipper) {
-//         this.flipper = flipper;
-//     }
-
-//     setBackNode(back) {
-//         this.back = back;
-//     }
-//     setImageNode(image) {
-//         this.image = image;
-//     }
-// }
-
 const MemojiReactApp = () => {
   const [endgameText, setEndgameText] = useState(null);
   const [appState, dispatch] = useReducer(reducer, appInitialState);
@@ -62,25 +46,20 @@ const MemojiReactApp = () => {
     setEndgameText(popupText);
   }
 
-    const win = () => {
-      let win = true,        
-        cards = state.cards.slice(0),
-        flags = {...appState.flags};
+  const win = () => {
+    let win = true,        
+      cards = [...appState.cards];
 
-        gameEndingTextOunput('W.i.n');
-  
-      for (let i = 0; i < cards.length; i++) {
-        if (!cards[i].back.classList.contains('correct')) win = false;
-      }
-      if (win) {
-        flags.win = true;
-        // setState({
-        //     ...state,
-        //     flags: flags,
-        // });
-        endGame();
-      } 
+      gameEndingTextOunput('W.i.n');
+
+    for (let i = 0; i < cards.length; i++) {
+      if (!cards[i].back.classList.contains('correct')) win = false;
     }
+    if (win) {
+      dispatch(setFlags({...flags, win: true}));
+      endGame();
+    } 
+  }
 
   const lose = () => {
     gameEndingTextOunput('L.o.s.e');
@@ -121,7 +100,10 @@ const MemojiReactApp = () => {
     // переворот карточки
     rotateCard(currentCard, openedCards);
     
-    if (openedCards.length > 1) compareCards(openedCards, cards);
+    if (openedCards.length > 1) {
+      const correct = compareCards(openedCards, cards);
+      if(correct) win(); 
+    }
 
     dispatch(saveOpenedCards(openedCards));
   }
@@ -133,13 +115,9 @@ const MemojiReactApp = () => {
         recordsWindow = document.querySelector(".recordsWindow"),
         nameField = document.querySelector('.userInfo__name'),
         flags = {...appState.flags};
-        // timer = {...state.timer};
 
     if (event.target.closest('.pauseWindow .button')) {
-        // flags.pause = 0;
-        dispatch(setFlags({ ...flags, isModalOpen: false, pause: false }))
-        // modalWindow.classList.remove('visible');
-        // pauseWindow.classList.remove('visible');
+        dispatch(setFlags({ ...flags, isModalOpen: false, pause: false }));
         timer.id = window.setInterval(() => decrTimer(), 1000);
         dispatch(setTimer(timer));
 
@@ -155,12 +133,7 @@ const MemojiReactApp = () => {
         if (!flags.pause) {
             modalWindow.classList.remove('visible');
         }
-    } 
-      // setState({
-      //     ...state,
-      //     flags: flags,
-      //     timer: timer,
-      // });
+    }
   }
 
   const menuBlockClickHandler = (event) => {
@@ -169,47 +142,38 @@ const MemojiReactApp = () => {
         pauseWindow = document.querySelector(".pauseWindow"),
         settingsWindow = document.querySelector(".settingsWindow"),
         recordsWindow = document.querySelector(".recordsWindow");
-        // timer = {...state.timer},
-        // flags = {...state.flags};
     if (flags.menuOpened) {
-        if (event.target.closest('#newGame')) {
-            toDefault();
-            clearInterval(timer.id);
-    
-        } else if (event.target.closest('#settings')) {
-            flags.settingsWindowOpened = 1;
-            modalWindow.classList.add('visible');
-            settingsWindow.classList.add('visible');
+      if (event.target.closest('#newGame')) {
+        toDefault();
+        clearInterval(timer.id);
+  
+      } else if (event.target.closest('#settings')) {
+        flags.settingsWindowOpened = 1;
+        modalWindow.classList.add('visible');
+        settingsWindow.classList.add('visible');
 
-        } else if (event.target.closest('#recordsTable')) {
-            flags.recordsTableOpened = 1;
-            modalWindow.classList.add('visible');
-            recordsWindow.classList.add('visible');
-        } 
+      } else if (event.target.closest('#recordsTable')) {
+        flags.recordsTableOpened = 1;
+        modalWindow.classList.add('visible');
+        recordsWindow.classList.add('visible');
+      } 
 
-        flags.menuOpened = 0;
-        menuList.classList.remove('visible');
+      flags.menuOpened = 0;
+      menuList.classList.remove('visible');
     } else {
-        if (event.target.closest('.menuBlock')) {
-            if(event.target.closest('.menuBlock__pauseButton')) {
-                flags.pause = 1;
-                dispatch(openModal());
-                // dispatch(setFlags({...flags, isModalOpen: true, pause: true}));
-                // modalWindow.classList.add('visible');
-                // pauseWindow.classList.add('visible');
-                clearInterval(timer.id);
+      if (event.target.closest('.menuBlock')) {
+        if(event.target.closest('.menuBlock__pauseButton')) {
+          flags.pause = 1;
+          dispatch(openModal());
+          clearInterval(timer.id);
 
-            } else if (event.target.closest('.menuBlock__burgerButton')) {
-                flags.menuOpened = 1;
-                menuList.classList.add('visible');
+        } else if (event.target.closest('.menuBlock__burgerButton')) {
+          flags.menuOpened = 1;
+          menuList.classList.add('visible');
 
-            } 
-        }
+        } 
+      }
     }
-        // setState({
-        //     ...state,
-        //     flags: flags,
-        // });
   }
 
     /* 
@@ -224,49 +188,47 @@ const MemojiReactApp = () => {
     //     return emojis;
     // }
 
-    const putNewCards = (cards) => {
-        let emojis,
-            imgsArray = Array.from(document.querySelectorAll('.image_wrapper'));
-            //cards = this.cards.slice(0);
-    
-        emojis = mixEmojis();
-        for(let i =0; i < emojis.length; i++)
-        {
-            cards[i].image = emojis[i];
-            imgsArray[i].textContent = emojis[i];
-        }
+  const putNewCards = (cards) => {
+      let emojis,
+          imgsArray = Array.from(document.querySelectorAll('.image_wrapper'));
+          //cards = this.cards.slice(0);
+  
+      emojis = mixEmojis();
+      for(let i =0; i < emojis.length; i++)
+      {
+          cards[i].image = emojis[i];
+          imgsArray[i].textContent = emojis[i];
+      }
 
-    }
+  }
 
-    const toDefault = () => {
-        let timerObj = document.querySelector('.playground__timerWrapper'),
-            cards = state.cards.slice(0),
-            openedCards = state.openedCards.slice(0),
-            flags = {...flags},
-            timer = {...timer},
-            i;
-    
-        for(i = 0; i < cards.length; i++)
-        {
-            cards[i].flipper.classList.remove('rotate');
-            cards[i].back.classList.remove('correct'); 
-            cards[i].back.classList.remove('incorrect');
-        }
-        openedCards.splice(0, openedCards.length);
-        flags.firstClick = 1;
-        timer.counter = 60;
-        timerObj.textContent = '01:00';
-        flags.lose = 0;
-        flags.win = 0;
-        putNewCards(cards);
-    
-        setState({
-            cards: cards,
-            openedCards: openedCards,
-            flags: flags,
-            timer: timer,
-        });
+  const toDefault = () => {
+    let timerObj = document.querySelector('.playground__timerWrapper'),
+      cards = state.cards.slice(0),
+      openedCards = state.openedCards.slice(0),
+      flags = {...flags},
+      timer = {...timer};
+
+    for(let i = 0; i < cards.length; i++) {
+      cards[i].flipper.classList.remove('rotate');
+      cards[i].back.classList.remove('correct'); 
+      cards[i].back.classList.remove('incorrect');
     }
+    openedCards.splice(0, openedCards.length);
+    flags.firstClick = 1;
+    timer.counter = 60;
+    timerObj.textContent = '01:00';
+    flags.lose = 0;
+    flags.win = 0;
+    putNewCards(cards);
+
+    setState({
+        cards: cards,
+        openedCards: openedCards,
+        flags: flags,
+        timer: timer,
+    });
+  }
 
   // const onDifChangeHandler = (event) => {
   //     let difficultyLvlInputs = Array.from(document.querySelectorAll('.difficultyLevel')),

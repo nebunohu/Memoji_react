@@ -31,8 +31,8 @@ const compareCards = (openedCards, cards) => {
   for(let i = 0; i < cards.length; i++) {
       if(!cards[i].back.classList.contains('correct')) correct = false;
   }
-
-  if(correct) win();            
+ 
+  return correct;          
 }
 
 export default compareCards;

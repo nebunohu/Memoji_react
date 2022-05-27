@@ -4,7 +4,6 @@ import { appInitialState } from "./context"
 const reducer = (state = appInitialState, action) => {
   switch(action.type) {
     case ADD_CARD: {
-      console.log(action.card.flipper.textContent);
       return {
         ...state,
         cards: [
