@@ -54,13 +54,6 @@ li {
     cursor: default;
 }
 
-.image_wrapper {
-    margin: auto;
-    font-size: 75px;
-    line-height: 75px;
-    height: max-content;
-}
-
 /*.card:hover .flipper,*/ .card.hover .flipper, .card .rotate {
     transform: rotateY(180deg);
 }

@@ -30,7 +30,7 @@ const Card = ({ id, onClick, emoji, dispatch }) => {
           className={`${styles.cardWrapperBack}`}
           ref={backRef}
         >
-          {emoji}
+          <div className={`${styles.imageWrapper}`}>{emoji}</div>
         </div>
       </div>
     </div>
