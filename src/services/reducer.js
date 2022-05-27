@@ -1,4 +1,4 @@
-import { ADD_CARD, SAVE_OPENED_CARDS, SET_FIRST_CLICK, SET_TIMER } from "./actions";
+import { ADD_CARD, CLOSE_MODAL, DECREMENT_TIMER, OPEN_MODAL, SAVE_OPENED_CARDS, SET_FIRST_CLICK, SET_FLAGS, SET_TIMER } from "./actions";
 import { appInitialState } from "./context"
 
 const reducer = (state = appInitialState, action) => {
@@ -36,6 +36,39 @@ const reducer = (state = appInitialState, action) => {
       return {
         ...state,
         timer: action.timer,
+      };
+    }
+    case DECREMENT_TIMER: {
+      return {
+        ...state,
+        timer: {
+          ...state.timer,
+          counter: action.counter,
+        }
+      };
+    }
+    case OPEN_MODAL: {
+      return {
+        ...state,
+        flags: {
+          ...state.flags,
+          isModalOpen: true,
+        },
+      };
+    }
+    case CLOSE_MODAL: {
+      return {
+        ...state,
+        flags: {
+          ...state.flags,
+          isModalOpen: false,
+        },
+      };
+    }
+    case SET_FLAGS: {
+      return {
+        ...state,
+        flags: action.flags,
       };
     }
     default: {

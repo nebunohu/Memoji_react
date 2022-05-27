@@ -1,39 +1,30 @@
 
 const path = require("path");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const devMode = process.env.NODE_ENV !== "production";
+const devMode = process.env.NODE_ENV !== 'production';
 
 module.exports = {
     entry: path.resolve(__dirname, "./src/script.js"),
-    mode: "development",
+    mode: devMode ? 'development' : 'production',
     output: {
         path: path.resolve(__dirname, "build"),
-        filename: "[name].[contenthash].js",
+        filename: '[name].[contenthash].js',
         clean: true
       },
     devServer: {
         static: {
-            directory: path.join(__dirname, "build"),
+            directory: path.join(__dirname, 'build'),
         },
         compress: true,
          port: 3000,
-        //watchContentBase: true,
-        // progress: true,
         client: {
           overlay: {
             errors: true,
             warnings: false,
           }
         },
-        // clientLogLevel: 'info',
     },
     devtool: 'source-map',
-    /*'babel': {
-        'presets': [
-            '@babel/env',
-            '@babel/react'
-        ]
-    },*/
 
     module: {
         rules: [
@@ -46,29 +37,11 @@ module.exports = {
             },
             {
                 test: /\.m?jsx?$/,
-                exclude: /(node_modules|bower_components)/,
+                exclude: /(node_modules | bower_components)/,
                 use: {
                     loader: "babel-loader"
                 }
             },
-            // {
-            //     test: /\.css$/,
-            //     use: [
-            //         "style-loader",
-            //         {
-            //             loader: "css-loader",
-            //             options: { 
-            //                 modules: {
-            //                     mode: "local",
-            //                     auto: true,
-            //                     exportGlobals: true,
-            //                     localIdentName: "[name]__[local]--[hash:base64:5]",
-            //                 } 
-            //             }
-            //         }
-
-            //     ]
-            // },
             {
                 test: /\.s[sc]ss$/i,
                 use: [

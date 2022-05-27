@@ -5,7 +5,7 @@ import ModalWindow from '../modalWindow/modalWindow';
 import UserInfo from '../userInfo/userInfo';
 import { AppContext, appInitialState } from '../../services/context';
 import reducer from '../../services/reducer';
-import { saveOpenedCards, setFirstClick, setTimer } from '../../services/actions';
+import { decrementTimer, openModal, closeModal, OPEN_MODAL, saveOpenedCards, setFirstClick, setFlags, setTimer } from '../../services/actions';
 
 // Styles
 import styles from './app.module.scss';
@@ -14,6 +14,9 @@ import styles from './app.module.scss';
 import compareCards from '../../utils/compare-cards';
 import rotateCard from '../../utils/rotate-card';
 import setCurrentCard from '../../utils/set-current-card';
+import outputTimeString from '../../utils/output-time-string';
+import PausePopup from '../pause-popup/pause-popup';
+import EndgamePopup from '../endgame-popup/endgame-popup';
 
 // class Card {
 // 	constructor(id) {
@@ -32,115 +35,72 @@ import setCurrentCard from '../../utils/set-current-card';
 // }
 
 const MemojiReactApp = () => {
+  const [endgameText, setEndgameText] = useState(null);
   const [appState, dispatch] = useReducer(reducer, appInitialState);
-  const { cards, openedCards, flags, timer } = useContext(AppContext);
-    const [state, setState] = useState({
-        flags: {
-            firstClick: true,               // флаг начала игры
-            menuOpened: false,              // флаг открытия меню игры
-            settingsWindowOpened: false,    // флаг открытия меню выбора сложности
-            recordsTableOpened: false,      // флаг открытия таблицы рекордов
-            pause: false,                   // флаг паузы игры
-            win: false,                     // флаг победы в игре
-            lose: false,                    // флаг поражения в игре
-        },
-        // DOMCreated: false,                  // флаг 
-        difficultyLevel: 0,                 // уровень сложности
-        resultTable: {
-            playerName: null,               // имя игрока
-            score: null,                    // счёт
-        },
-        // timer: {
-        //     counter: 60,                    // счетчик таймера
-        //     id: 0,                          // идентификатор таймера
-        // },
-        // cards: [],                          // массив карт на экране
-        // backs: [],                          // массив обратных сторон карт
-        // flippers: null,                     // массив флипперов карт
-        cardsContainer: null,               // объект div-контейнера для карт
-        openedCards: [],                    // открытые карты
-        cardsState: Array(12).fill(false),  // статус карты на поле
-    });
+  const { timer, flags } = appState;
 
-    const endGame = () => {
-        let popupWindow = document.querySelector('.afterGame'),
-            modalWindow = document.querySelector('.modalWindow'),
-            timer = {...state.timer};
-    
-        modalWindow.classList.add('visible');
-        popupWindow.classList.add('visible');
-        clearInterval(timer.id);
-    }
+  const endGame = () => {
+    dispatch(openModal());
+    clearInterval(timer.id);
+  }
 
 /*
     Функция вывода текста в конце игры
 */
   const gameEndingTextOunput = (text) => {
     let letters,
-        letterSpan,
-        deletingText = document.querySelectorAll('.popupText span'),
-        popupText = document.querySelector(".popupText");
-  
-    for (let i = 0; i < deletingText.length; i++) {
-      popupText.removeChild(deletingText[i]);
-    }
+        letterSpan;
 
+    const nodes = [];
     letters = text.split('.');
 
     for (let i = 0; i < letters.length; i++) {
-      letterSpan = document.createElement('span')
-      letterSpan.textContent = letters[i];
-      letterSpan.classList.add('letter' + (i + 1));
-      popupText.appendChild(letterSpan);
-    } 
+      letterSpan = React.createElement('span', {key: `letter${i}`}, letters[i]);
+      nodes.push(letterSpan);
+    }
+    const popupText = React.createElement('div', null, nodes);
+    setEndgameText(popupText);
   }
 
     const win = () => {
-        let win = true,        
-          cards = state.cards.slice(0),
-          flags = {...appState.flags};
+      let win = true,        
+        cards = state.cards.slice(0),
+        flags = {...appState.flags};
+
+        gameEndingTextOunput('W.i.n');
   
-          gameEndingTextOunput('W.i.n');
-    
-        for (let i = 0; i < cards.length; i++) {
-          if (!cards[i].back.classList.contains('correct')) win = false;
-        }
-        if (win) {
-          flags.win = true;
-          setState({
-              ...state,
-              flags: flags,
-          });
-          endGame();
-        } 
+      for (let i = 0; i < cards.length; i++) {
+        if (!cards[i].back.classList.contains('correct')) win = false;
+      }
+      if (win) {
+        flags.win = true;
+        // setState({
+        //     ...state,
+        //     flags: flags,
+        // });
+        endGame();
+      } 
     }
 
   const lose = () => {
     gameEndingTextOunput('L.o.s.e');
-    
+    dispatch(setFlags({ ...flags, lose: true }));
     endGame();
-  }
+  };
 
   const decrTimer = () => {
-    let timerWrapper = document.querySelector('.playground__timerWrapper'),
-      minutes, seconds,
-      minutesStr, secondsStr;     // Значения минут и секунд записанные строкой 
+    const timerWrapper = document.querySelector('.playground__timerWrapper');
       
     timer.counter--;
-    minutes = Math.floor(timer.counter / 60);
-    minutesStr = minutes.toString();
-    if (minutes < 10) minutesStr = '0' + minutesStr;
-    seconds = timer.counter % 60;
-    secondsStr =seconds.toString();
-    if (seconds < 10) secondsStr = '0' + secondsStr;
-    timerWrapper.textContent = minutesStr + ':' + secondsStr;
+    
+    timerWrapper.textContent = outputTimeString(timer.counter);
 
     if (!timer.counter) {
       clearInterval(timer.id);
       lose();
     }
-    dispatch(setTimer(timer));
-  }
+    dispatch(decrementTimer(timer.counter));
+  };
 
   const playgroundClickHandler = (event) => {
     let flags = {...appState.flags},
@@ -166,87 +126,91 @@ const MemojiReactApp = () => {
     dispatch(saveOpenedCards(openedCards));
   }
 
-    const modalWindowClickHandler = (event) => {
-        let modalWindow = document.querySelector(".modalWindow"),
-            pauseWindow = document.querySelector(".pauseWindow"),
-            settingsWindow = document.querySelector(".settingsWindow"),
-            recordsWindow = document.querySelector(".recordsWindow"),
-            nameField = document.querySelector('.userInfo__name'),
-            flags = {...state.flags},
-            timer = {...state.timer};
+  const modalWindowClickHandler = (event) => {
+    let modalWindow = document.querySelector(".modalWindow"),
+        pauseWindow = document.querySelector(".pauseWindow"),
+        settingsWindow = document.querySelector(".settingsWindow"),
+        recordsWindow = document.querySelector(".recordsWindow"),
+        nameField = document.querySelector('.userInfo__name'),
+        flags = {...appState.flags};
+        // timer = {...state.timer};
 
-        if(event.target.closest('.pauseWindow .button')) {
-            flags.pause = 0;
+    if (event.target.closest('.pauseWindow .button')) {
+        // flags.pause = 0;
+        dispatch(setFlags({ ...flags, isModalOpen: false, pause: false }))
+        // modalWindow.classList.remove('visible');
+        // pauseWindow.classList.remove('visible');
+        timer.id = window.setInterval(() => decrTimer(), 1000);
+        dispatch(setTimer(timer));
+
+    } else if (event.target.closest('.settingsWindow .button')) {
+        nameField.textContent = state.playerName;
+    } else if (!event.target.closest('.modalWindow__popupWindow')) {
+        flags.settingsWindowOpened = 0;
+        settingsWindow.classList.remove('visible');
+
+        flags.recordsTableWindowOpened = 0;
+        recordsWindow.classList.remove('visible');
+
+        if (!flags.pause) {
             modalWindow.classList.remove('visible');
-            pauseWindow.classList.remove('visible');
-            timer.id = window.setInterval(() => decrTimer(),1000);
-
-        } else if(event.target.closest('.settingsWindow .button')) {
-            nameField.textContent = state.playerName;
-        } else if(!event.target.closest('.modalWindow__popupWindow')) {
-            flags.settingsWindowOpened = 0;
-            settingsWindow.classList.remove('visible');
-
-            flags.recordsTableWindowOpened = 0;
-            recordsWindow.classList.remove('visible');
-
-            if(!flags.pause) {
-                modalWindow.classList.remove('visible');
-            }
-        } 
-        setState({
-            ...state,
-            flags: flags,
-            timer: timer,
-        });
-    }
-
-    const menuBlockClickHandler = (event) => {
-        let menuList = document.querySelector(".menuBlock__list"),
-            modalWindow = document.querySelector(".modalWindow"),
-            pauseWindow = document.querySelector(".pauseWindow"),
-            settingsWindow = document.querySelector(".settingsWindow"),
-            recordsWindow = document.querySelector(".recordsWindow"),
-            timer = {...state.timer},
-            flags = {...state.flags};
-        if(state.flags.menuOpened) {
-            if(event.target.closest('#newGame')) {
-                toDefault();
-                clearInterval(timer.id);
-        
-            } else if (event.target.closest('#settings')) {
-                flags.settingsWindowOpened = 1;
-                modalWindow.classList.add('visible');
-                settingsWindow.classList.add('visible');
-
-            } else if (event.target.closest('#recordsTable')) {
-                flags.recordsTableOpened = 1;
-                modalWindow.classList.add('visible');
-                recordsWindow.classList.add('visible');
-            } 
-
-            flags.menuOpened = 0;
-            menuList.classList.remove('visible');
-        } else {
-            if(event.target.closest('.menuBlock')) {
-                if(event.target.closest('.menuBlock__pauseButton')) {
-                    flags.pause = 1;
-                    modalWindow.classList.add('visible');
-                    pauseWindow.classList.add('visible');
-                    clearInterval(timer.id);
-    
-                } else if(event.target.closest('.menuBlock__burgerButton')) {
-                    flags.menuOpened = 1;
-                    menuList.classList.add('visible');
-    
-                } 
-            }
         }
-        setState({
-            ...state,
-            flags: flags,
-        });
+    } 
+      // setState({
+      //     ...state,
+      //     flags: flags,
+      //     timer: timer,
+      // });
+  }
+
+  const menuBlockClickHandler = (event) => {
+    let menuList = document.querySelector(".menuBlock__list"),
+        modalWindow = document.querySelector(".modalWindow"),
+        pauseWindow = document.querySelector(".pauseWindow"),
+        settingsWindow = document.querySelector(".settingsWindow"),
+        recordsWindow = document.querySelector(".recordsWindow");
+        // timer = {...state.timer},
+        // flags = {...state.flags};
+    if (flags.menuOpened) {
+        if (event.target.closest('#newGame')) {
+            toDefault();
+            clearInterval(timer.id);
+    
+        } else if (event.target.closest('#settings')) {
+            flags.settingsWindowOpened = 1;
+            modalWindow.classList.add('visible');
+            settingsWindow.classList.add('visible');
+
+        } else if (event.target.closest('#recordsTable')) {
+            flags.recordsTableOpened = 1;
+            modalWindow.classList.add('visible');
+            recordsWindow.classList.add('visible');
+        } 
+
+        flags.menuOpened = 0;
+        menuList.classList.remove('visible');
+    } else {
+        if (event.target.closest('.menuBlock')) {
+            if(event.target.closest('.menuBlock__pauseButton')) {
+                flags.pause = 1;
+                dispatch(openModal());
+                // dispatch(setFlags({...flags, isModalOpen: true, pause: true}));
+                // modalWindow.classList.add('visible');
+                // pauseWindow.classList.add('visible');
+                clearInterval(timer.id);
+
+            } else if (event.target.closest('.menuBlock__burgerButton')) {
+                flags.menuOpened = 1;
+                menuList.classList.add('visible');
+
+            } 
+        }
     }
+        // setState({
+        //     ...state,
+        //     flags: flags,
+        // });
+  }
 
     /* 
         Функция перемешивает эмодзи в случайном порядке 
@@ -304,51 +268,54 @@ const MemojiReactApp = () => {
         });
     }
 
-    const onDifChangeHandler = (event) => {
-        let difficultyLvlInputs = Array.from(document.querySelectorAll('.difficultyLevel')),
-            difficultyLevel,
-            playerName,
-            i;
+  // const onDifChangeHandler = (event) => {
+  //     let difficultyLvlInputs = Array.from(document.querySelectorAll('.difficultyLevel')),
+  //         difficultyLevel,
+  //         playerName,
+  //         i;
 
-        if(event.target.closest('.settingsWindow ul')) {
-            for(i = 0; i < difficultyLvlInputs.length; i++) {
-                if(difficultyLvlInputs[i].checked === true) {
-                    difficultyLevel = i;
-                }
-            }
+  //     if(event.target.closest('.settingsWindow ul')) {
+  //         for(i = 0; i < difficultyLvlInputs.length; i++) {
+  //             if(difficultyLvlInputs[i].checked === true) {
+  //                 difficultyLevel = i;
+  //             }
+  //         }
 
-            setState({
-                ...state,
-                difficultyLevel: difficultyLevel,
-            })
-        } else if(event.target.closest('.settingsWindow')) {    
-            playerName = event.target.value;
-            
-            setState({
-                ...state,
-                playerName: playerName,
-            });
-        }
-        
+  //         setState({
+  //             ...state,
+  //             difficultyLevel: difficultyLevel,
+  //         })
+  //     } else if(event.target.closest('.settingsWindow')) {    
+  //         playerName = event.target.value;
+          
+  //         setState({
+  //             ...state,
+  //             playerName: playerName,
+  //         });
+  //     }
+      
+  // }
+
+  const onModalOverlayClick = (e, overlay) => {
+    if (e.target === overlay) {
+      if (flags.pause) {
+        dispatch(setFlags({ ...flags, pause: false }));
+        timer.id = window.setInterval(() => decrTimer(), 1000);
+        dispatch(setTimer(timer));
+      }
+      if (flags.win) {
+        dispatch(setFlags({ ...flags, win: false }));
+      }
+      if (flags.lose) {
+        dispatch(setFlags({ ...flags, lose: false }));
+      }
+      dispatch(closeModal());
     }
-
-    // useEffect(() => {
-    //     setState({
-    //         backs: Array.from(document.querySelectorAll('.card__wrapperBack')),
-    //         flippers: Array.from(document.querySelectorAll('.card__flipper')),
-    //         cardsContainer: document.querySelector('.playground__cardsContainer'),
-    //     });
-
-    // }, []);
+  };
   
   return (
     <AppContext.Provider value={appState}>
       <div className={`${styles.wrapper}`}>
-        {/* <ModalWindow 
-          toDefault={toDefault}
-          onChange={onDifChangeHandler}
-          onClick = {(event) => modalWindowClickHandler(event)}
-        /> */}
         <MenuBlock 
           onClick = {(event) => menuBlockClickHandler(event)}
         />
@@ -358,6 +325,23 @@ const MemojiReactApp = () => {
         />
         {/*<UserInfo playerName="User1" />*/}
       </div>
+
+      {
+        flags.isModalOpen && flags.pause && <ModalWindow
+          overlayClick={onModalOverlayClick}
+        >
+          <PausePopup onClick={modalWindowClickHandler}/>
+        </ModalWindow>
+      }
+      {
+        flags.isModalOpen && (flags.win || flags.lose) && <ModalWindow
+          overlayClick={onModalOverlayClick}
+        >
+          <EndgamePopup onClick={modalWindowClickHandler}>
+            <div>{endgameText}</div>
+          </EndgamePopup>
+        </ModalWindow>
+      }
     </AppContext.Provider>
   );
 }
