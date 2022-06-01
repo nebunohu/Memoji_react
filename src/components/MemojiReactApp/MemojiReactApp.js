@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useReducer } from 'react';
+import React, { useState, useEffect, useContext, useReducer, useRef } from 'react';
 import Playground from '../playground/playground';
 import MenuBlock from '../menuBlock/menuBlock';
 import ModalWindow from '../modalWindow/modalWindow';
@@ -17,12 +17,13 @@ import setCurrentCard from '../../utils/set-current-card';
 import outputTimeString from '../../utils/output-time-string';
 import PausePopup from '../pause-popup/pause-popup';
 import EndgamePopup from '../endgame-popup/endgame-popup';
+import mixEmojis from '../../utils/mix-emojis';
 
 const MemojiReactApp = () => {
   const [endgameText, setEndgameText] = useState(null);
+  // const appState = useContext(AppContext);
   const [appState, dispatch] = useReducer(reducer, appInitialState);
-  const { timer } = useContext(AppContext);
-  const { flags } = appState;
+  const { flags, timer } = appState;
 
   const endGame = () => {
     dispatch(openModal());
@@ -93,48 +94,36 @@ const MemojiReactApp = () => {
     /* 
         Функция перемешивает эмодзи в случайном порядке 
     */
-    // const mixEmojis = () => {
-    //     let emojis = ['🐰', '🐰', '🐶', '🐶', '🐱', '🐱', '🐼', '🐼', '🐵', '🐵', '🐯','🐯'];
+    
 
-    //     emojis = emojis.sort(function(){
-    //         return Math.random() - 0.5;
-    //     });
-    //     return emojis;
-    // }
+  // const putNewCards = (cards) => {
+  //   let emojis,
+  //       imgsArray = Array.from(document.querySelectorAll('.image_wrapper'));
+  //       //cards = this.cards.slice(0);
 
-  const putNewCards = (cards) => {
-      let emojis,
-          imgsArray = Array.from(document.querySelectorAll('.image_wrapper'));
-          //cards = this.cards.slice(0);
-  
-      emojis = mixEmojis();
-      for(let i =0; i < emojis.length; i++)
-      {
-          cards[i].image = emojis[i];
-          imgsArray[i].textContent = emojis[i];
-      }
-
-  }
+  //   emojis = mixEmojis();
+  //   for (let i =0; i < emojis.length; i++) {
+  //       cards[i].image = emojis[i];
+  //       imgsArray[i].textContent = emojis[i];
+  //   }
+  // }
 
   const toDefault = () => {
     let cards = [...appState.cards];
 
-    for(let i = 0; i < cards.length; i++) {
+    for (let i = 0; i < cards.length; i++) {
       cards[i].flipper.classList.remove('rotate');
       cards[i].back.classList.remove('correct'); 
       cards[i].back.classList.remove('incorrect');
     }
     
     dispatch(setStateToDefault());
-    // putNewCards(cards);
+    const emojis = mixEmojis();
 
-    
-    // setState({
-    //     cards: cards,
-    //     openedCards: openedCards,
-    //     flags: flags,
-    //     timer: timer,
-    // });
+    emojis.forEach((el, index) => {
+      cards[index].back.children[0].textContent = el;
+      cards[index].image = el;
+    });
   };
 
   // const onDifChangeHandler = (event) => {
@@ -166,13 +155,15 @@ const MemojiReactApp = () => {
   // }
 
   const playgroundClickHandler = (event) => {
-    let flags = {...appState.flags},
+    let /*flags = {...appState.flags},*/
       cards = [...appState.cards],
-      openedCards = appState.openedCards?.length ? [...appState.openedCards] : [];
+      openedCards = [...appState.openedCards];
       // timer = {...appState.timer};
 
     const currentFlipper = event.currentTarget;
 
+    // console.log(`context: ${contextFlags.firstClick}`);
+    console.log(`reducer: ${flags.firstClick}`);
     if (flags.firstClick) {
       dispatch(setFirstClick());
       timer.id = window.setInterval(() => decrTimer(), 1000);
@@ -232,6 +223,12 @@ const MemojiReactApp = () => {
     }
   }
 
+  const pauseWindowClickHandler = () => {
+    dispatch(setFlags({ ...flags, isModalOpen: false, pause: false }));
+    timer.id = window.setInterval(() => decrTimer(), 1000);
+    dispatch(setTimer(timer));
+  };
+
   const modalWindowClickHandler = (event) => {
     let modalWindow = document.querySelector(".modalWindow"),
         settingsWindow = document.querySelector(".settingsWindow"),
@@ -239,12 +236,7 @@ const MemojiReactApp = () => {
         nameField = document.querySelector('.userInfo__name'),
         flags = {...appState.flags};
 
-    if (event.target.closest('.pauseWindow .button')) {
-        dispatch(setFlags({ ...flags, isModalOpen: false, pause: false }));
-        timer.id = window.setInterval(() => decrTimer(), 1000);
-        dispatch(setTimer(timer));
-
-    } else if (event.target.closest('.settingsWindow .button')) {
+    if (event.target.closest('.settingsWindow .button')) {
         nameField.textContent = state.playerName;
     } else if (!event.target.closest('.modalWindow__popupWindow')) {
         flags.settingsWindowOpened = 0;
@@ -298,7 +290,9 @@ const MemojiReactApp = () => {
         flags.isModalOpen && flags.pause && <ModalWindow
           overlayClick={onModalOverlayClick}
         >
-          <PausePopup onClick={modalWindowClickHandler}/>
+          <PausePopup
+            onClick={pauseWindowClickHandler}
+          />
         </ModalWindow>
       }
       {
@@ -306,7 +300,9 @@ const MemojiReactApp = () => {
           overlayClick={onModalOverlayClick}
         >
           <EndgamePopup onClick={endgameClickHandler}>
-            <div>{endgameText}</div>
+            <div>
+              {endgameText}
+            </div>
           </EndgamePopup>
         </ModalWindow>
       }

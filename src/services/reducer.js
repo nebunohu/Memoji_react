@@ -27,6 +27,7 @@ const reducer = (state = appInitialState, action) => {
       return {
         ...state,
         flags: {
+          ...state.flags,
           firstClick: false,
         },
       };
@@ -71,7 +72,13 @@ const reducer = (state = appInitialState, action) => {
       };
     }
     case SET_STATE_TO_DEFAULT: {
-      return appInitialState;
+      return {
+        ...state,
+        flags: {
+          ...state.flags,
+          firstClick: true,
+        }
+      };
     }
     default: {
       return state;

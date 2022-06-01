@@ -1,5 +1,6 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { useState } from 'react';
+import mixEmojis from '../../utils/mix-emojis.js';
 import Card from '../card/card.jsx';
 
 // Styles
@@ -9,15 +10,6 @@ const Playground = ({ onClick, dispatch }) => {
     const [isEmojisReady, setIsEmojisReady] = useState(false);
     const [emojis, setEmojis] = useState([]);
     let cards = Array(12).fill('card'); 
-
-    const mixEmojis = () => {
-        let emojis = ['🐰', '🐰', '🐶', '🐶', '🐱', '🐱', '🐼', '🐼', '🐵', '🐵', '🐯','🐯'];
-
-        emojis = emojis.sort(function() {
-            return Math.random() - 0.5;
-        });
-        return emojis;
-    }
 
     if (!isEmojisReady) {
         setEmojis(mixEmojis());
